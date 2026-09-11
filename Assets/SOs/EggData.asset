@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c7ca3295272edd4ebb6d2eccbecc3fa, type: 3}
+  m_Name: EggData
+  m_EditorClassIdentifier: Assembly-CSharp::EggData
+  eggName: first
+  maxHP: 100
+  hardness: 50
+  weight: 1
+  attackPower: 10
+  movePower: 10
+  maxSpeed: 15
+  eggPrefab: {fileID: 3705822811418187198, guid: 523f67f245657ea4bb6ee05550536ced, type: 3}
