@@ -51,12 +51,14 @@ public class ExhibitionLobbyManager : MonoBehaviour
     public EggData defaultEgg;
 
     private LobbyState currentState;
-
     private float remainingTime;
-
     private bool timerStarted = false;
     private bool gameStarted = false;
 
+
+    // =========================================================
+    // 初期化
+    // =========================================================
 
     void Start()
     {
@@ -65,10 +67,13 @@ public class ExhibitionLobbyManager : MonoBehaviour
         remainingTime = lobbyTime;
 
         SetupInitialUI();
-
         UpdateTimerUI();
     }
 
+
+    // =========================================================
+    // 更新
+    // =========================================================
 
     void Update()
     {
@@ -118,12 +123,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // マウス入力
+    // マウス移動
     // =========================================================
 
-    /// <summary>
-    /// P1～P4に割り当てられたマウスが動いたとき。
-    /// </summary>
     public void OnPlayerMouseInput(int playerIndex)
     {
         if (gameStarted)
@@ -138,7 +140,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // まだ参加していない
+        // 未参加なら参加
         // -----------------------------------------------------
 
         if (!player.joined)
@@ -149,12 +151,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // 選択中
+        // Selecting中
         // -----------------------------------------------------
 
         if (player.state == LobbyPlayerState.Selecting)
         {
-            // 今はマウス移動では何もしない
             return;
         }
 
@@ -165,15 +166,15 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         if (player.state == LobbyPlayerState.Ready)
         {
-            // マウス移動では何もしない
             return;
         }
     }
 
 
-    /// <summary>
-    /// P1～P4に割り当てられたマウスがクリックされた。
-    /// </summary>
+    // =========================================================
+    // 左クリック
+    // =========================================================
+
     public void OnPlayerMouseClick(int playerIndex)
     {
         if (gameStarted)
@@ -187,40 +188,50 @@ public class ExhibitionLobbyManager : MonoBehaviour
         LobbyPlayer player = players[playerIndex];
 
 
-        // まだ参加していないなら
-        // クリックでも参加扱い
+        // -----------------------------------------------------
+        // 未参加でクリック
+        // -----------------------------------------------------
+
         if (!player.joined)
         {
+            Debug.Log(
+                "P" + (playerIndex + 1) +
+                " : LEFT CLICK → 参加"
+            );
+
             JoinPlayer(playerIndex);
+
             return;
         }
 
 
         // -----------------------------------------------------
-        // 選択中 → READY
+        // Selecting → READY
         // -----------------------------------------------------
 
         if (player.state == LobbyPlayerState.Selecting)
         {
             SetReady(playerIndex);
+
             return;
         }
 
 
         // -----------------------------------------------------
-        // READY → 選択中
+        // READY → Selecting
         // -----------------------------------------------------
 
         if (player.state == LobbyPlayerState.Ready)
         {
             CancelReady(playerIndex);
+
             return;
         }
     }
 
 
     // =========================================================
-    // 参加
+    // プレイヤー参加
     // =========================================================
 
     void JoinPlayer(int playerIndex)
@@ -229,11 +240,13 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         player.joined = true;
         player.ready = false;
-
         player.state = LobbyPlayerState.Selecting;
 
 
-        // PlayerManagerに参加を通知
+        // -----------------------------------------------------
+        // PlayerManager
+        // -----------------------------------------------------
+
         if (playerManager != null)
         {
             playerManager.SetPlayerJoined(
@@ -241,7 +254,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
                 true
             );
 
-            // 仮の卵が設定されている場合だけセット
+
             if (defaultEgg != null)
             {
                 playerManager.SetPlayerEgg(
@@ -252,7 +265,10 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // UI変更 
+        // -----------------------------------------------------
+        // UI
+        // -----------------------------------------------------
+
         if (player.ui != null)
         {
             player.ui.SetState(
@@ -261,20 +277,33 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // 最初の参加者なら60秒開始 
+        // -----------------------------------------------------
+        // タイマー開始
+        // -----------------------------------------------------
+
         if (!timerStarted)
         {
             timerStarted = true;
-            currentState = LobbyState.Joining;
 
-            remainingTime = lobbyTime;
+            currentState =
+                LobbyState.Joining;
 
-            Debug.Log("最初のプレイヤー参加 → 60秒開始");
+            remainingTime =
+                lobbyTime;
+
+            Debug.Log(
+                "===== 最初のプレイヤー参加 ====="
+            );
+
+            Debug.Log(
+                "60秒タイマー開始"
+            );
         }
+
 
         Debug.Log(
             "P" + (playerIndex + 1) +
-            " 参加"
+            " : 参加"
         );
     }
 
@@ -288,7 +317,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         LobbyPlayer player = players[playerIndex];
 
         player.ready = true;
-
         player.state = LobbyPlayerState.Ready;
 
 
@@ -302,7 +330,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         Debug.Log(
             "P" + (playerIndex + 1) +
-            " READY"
+            " : READY"
         );
     }
 
@@ -316,7 +344,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         LobbyPlayer player = players[playerIndex];
 
         player.ready = false;
-
         player.state = LobbyPlayerState.Selecting;
 
 
@@ -330,13 +357,13 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         Debug.Log(
             "P" + (playerIndex + 1) +
-            " READY解除"
+            " : READY解除"
         );
     }
 
 
     // =========================================================
-    // タイマー表示
+    // タイマーUI
     // =========================================================
 
     void UpdateTimerUI()
@@ -344,14 +371,18 @@ public class ExhibitionLobbyManager : MonoBehaviour
         if (timerText == null)
             return;
 
-        int seconds = Mathf.CeilToInt(remainingTime);
+        int seconds =
+            Mathf.CeilToInt(
+                remainingTime
+            );
 
-        timerText.text = seconds.ToString();
+        timerText.text =
+            seconds.ToString();
     }
 
 
     // =========================================================
-    // ゲーム開始
+    // 60秒終了 → ゲーム開始
     // =========================================================
 
     void StartGame()
@@ -361,22 +392,53 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         gameStarted = true;
 
-        Debug.Log("===== 60秒終了 =====");
-        Debug.Log("ゲーム開始");
+
+        Debug.Log(
+            "================================"
+        );
+
+        Debug.Log(
+            "===== 60秒終了 ====="
+        );
+
+
+        int readyCount = 0;
 
 
         // -----------------------------------------------------
-        // READYしているプレイヤーだけ参加扱い
+        // READYプレイヤーを確認
         // -----------------------------------------------------
 
         for (int i = 0; i < players.Length; i++)
         {
-            LobbyPlayer player = players[i];
+            LobbyPlayer player =
+                players[i];
+
+            Debug.Log(
+                "P" + (i + 1) +
+                " joined=" +
+                player.joined +
+                " ready=" +
+                player.ready +
+                " state=" +
+                player.state
+            );
+
 
             bool active =
                 player.joined &&
                 player.ready;
 
+
+            if (active)
+            {
+                readyCount++;
+            }
+
+
+            // -------------------------------------------------
+            // PlayerManagerへ反映
+            // -------------------------------------------------
 
             if (playerManager != null)
             {
@@ -385,7 +447,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
                     active
                 );
 
-                if (active && defaultEgg != null)
+
+                if (active &&
+                    defaultEgg != null)
                 {
                     playerManager.SetPlayerEgg(
                         i,
@@ -396,25 +460,55 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
+        Debug.Log(
+            "READY人数 : " +
+            readyCount
+        );
+
+
         // -----------------------------------------------------
-        // GameManagerへ
+        // READY 0人
+        // -----------------------------------------------------
+
+        if (readyCount == 0)
+        {
+            Debug.LogWarning(
+                "READYプレイヤーが0人です。"
+            );
+        }
+
+
+        // -----------------------------------------------------
+        // GameManager
         // -----------------------------------------------------
 
         if (gameManager != null)
         {
             gameManager.StartGame();
         }
+        else
+        {
+            Debug.LogError(
+                "ExhibitionLobbyManager : " +
+                "GameManagerが設定されていません。"
+            );
+        }
     }
 
 
     // =========================================================
-    // 外部から状態取得
+    // ゲーム開始済みか
     // =========================================================
 
     public bool IsGameStarted()
     {
         return gameStarted;
     }
+
+
+    // =========================================================
+    // 参加確認
+    // =========================================================
 
     public bool IsPlayerJoined(int playerIndex)
     {
@@ -424,6 +518,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         return players[playerIndex].joined;
     }
+
+
+    // =========================================================
+    // READY確認
+    // =========================================================
 
     public bool IsPlayerReady(int playerIndex)
     {

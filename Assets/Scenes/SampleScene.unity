@@ -620,7 +620,6 @@ GameObject:
   m_Component:
   - component: {fileID: 201332055}
   - component: {fileID: 201332059}
-  - component: {fileID: 201332058}
   - component: {fileID: 201332057}
   - component: {fileID: 201332056}
   m_Layer: 0
@@ -708,14 +707,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &201332058
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 201332054}
-  m_Enabled: 1
 --- !u!20 &201332059
 Camera:
   m_ObjectHideFlags: 0
@@ -916,7 +907,6 @@ GameObject:
   m_Component:
   - component: {fileID: 276034653}
   - component: {fileID: 276034657}
-  - component: {fileID: 276034656}
   - component: {fileID: 276034655}
   - component: {fileID: 276034654}
   m_Layer: 0
@@ -1004,14 +994,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &276034656
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276034652}
-  m_Enabled: 1
 --- !u!20 &276034657
 Camera:
   m_ObjectHideFlags: 0
@@ -2286,7 +2268,6 @@ GameObject:
   m_Component:
   - component: {fileID: 967481198}
   - component: {fileID: 967481202}
-  - component: {fileID: 967481201}
   - component: {fileID: 967481200}
   - component: {fileID: 967481199}
   m_Layer: 0
@@ -2374,14 +2355,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &967481201
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 967481197}
-  m_Enabled: 1
 --- !u!20 &967481202
 Camera:
   m_ObjectHideFlags: 0
@@ -3246,11 +3219,11 @@ MonoBehaviour:
   playerManager: {fileID: 2076230680}
   lobbyManager: {fileID: 2130820541}
   showDebugLog: 1
-  xSensitivity: 0.0001
-  zSensitivity: 0.0001
+  xSensitivity: 1
+  zSensitivity: 1
   invertX: 1
   invertZ: 1
-  showRawInput: 0
+  showRawInput: 1
 --- !u!4 &1787080644
 Transform:
   m_ObjectHideFlags: 0

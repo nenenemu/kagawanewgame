@@ -194,6 +194,7 @@ public class PlayerManager : MonoBehaviour
         player.spawnedEgg = egg;
 
 
+
         // =====================================================
         // EggPrefab‰Šú‰»
         // =====================================================

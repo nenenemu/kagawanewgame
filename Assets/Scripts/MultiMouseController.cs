@@ -43,25 +43,39 @@ public class MultiMouseTransform : MonoBehaviour
         public ushort usButtonData;
     }
 
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Explicit, Size = 24)]
     private struct RAWMOUSE
     {
+        // 0
         [FieldOffset(0)]
         public ushort usFlags;
 
+        // 4
         [FieldOffset(2)]
-        public RAWMOUSE_BUTTONS buttons;
+        public ushort padding;
 
+        // 4
+        [FieldOffset(4)]
+        public ushort usButtonFlags;
+
+        // 6
         [FieldOffset(6)]
+        public ushort usButtonData;
+
+        // 8
+        [FieldOffset(8)]
         public uint ulRawButtons;
 
-        [FieldOffset(10)]
+        // 12
+        [FieldOffset(12)]
         public int lLastX;
 
-        [FieldOffset(14)]
+        // 16
+        [FieldOffset(16)]
         public int lLastY;
 
-        [FieldOffset(18)]
+        // 20
+        [FieldOffset(20)]
         public uint ulExtraInformation;
     }
 
@@ -383,7 +397,17 @@ public class MultiMouseTransform : MonoBehaviour
                 raw.mouse.lLastY;
 
             ushort buttons =
-                raw.mouse.buttons.usButtonFlags;
+                raw.mouse.usButtonFlags;
+
+            if (buttons != 0)
+            {
+                Debug.Log(
+                    "P" +
+                    (playerIndex + 1) +
+                    " BUTTON FLAGS = " +
+                    buttons
+                );
+            }
 
             mouseInputs[playerIndex].delta +=
                 new Vector2(x, y);
@@ -495,7 +519,13 @@ public class MultiMouseTransform : MonoBehaviour
 
                 if (hasClick)
                 {
-                    lobbyManager.OnPlayerMouseClick(i);
+                    Debug.Log("P" + (i + 1) + " LEFT CLICK");
+
+                    if (lobbyManager != null &&
+                        !lobbyManager.IsGameStarted())
+                    {
+                        lobbyManager.OnPlayerMouseClick(i);
+                    }
                 }
             }
 
@@ -531,6 +561,10 @@ public class MultiMouseTransform : MonoBehaviour
         Vector2 delta
     )
     {
+
+
+
+
         if (playerManager == null)
             return;
 
@@ -554,6 +588,13 @@ public class MultiMouseTransform : MonoBehaviour
 
         Rigidbody rb =
             egg.GetComponent<Rigidbody>();
+
+        Debug.Log(
+    "P" + (playerIndex + 1) +
+    " Rigidbody = " +
+    (rb != null ? "‚ ‚è" : "NULL")
+);
+
 
         if (rb == null)
         {
@@ -624,6 +665,8 @@ public class MultiMouseTransform : MonoBehaviour
         // -------------------------------------------------
         // ˆÚ“®
         // -------------------------------------------------
+
+
 
         rb.AddForce(
             move *
