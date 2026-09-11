@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
         Result
     }
 
-
     [Header("現在のゲーム状態")]
     public GameState currentState = GameState.Select;
 
@@ -42,11 +41,23 @@ public class GameManager : MonoBehaviour
     [Header("メインカメラ")]
     public Camera mainCamera;
 
+
     [Header("カウントダウン")]
     public TMP_Text countdownText;
 
-    [Tooltip("3 → 2 → 1 の1つあたりの秒数")]
+    [Tooltip("現在は使用しません。カウントダウンは必ず1秒固定です。")]
     public float countdownTime = 1f;
+
+
+    [Header("展示ロビー")]
+    public ExhibitionLobbyManager exhibitionLobbyManager;
+
+
+    // =========================================================
+    // 内部状態
+    // =========================================================
+
+    private Coroutine countdownCoroutine;
 
 
     // =========================================================
@@ -55,11 +66,16 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // PlayerManagerが設定されていなければ探す
         if (playerManager == null)
         {
             playerManager =
                 FindFirstObjectByType<PlayerManager>();
+        }
+
+        if (exhibitionLobbyManager == null)
+        {
+            exhibitionLobbyManager =
+                FindFirstObjectByType<ExhibitionLobbyManager>();
         }
 
         ChangeState(GameState.Select);
@@ -102,6 +118,7 @@ public class GameManager : MonoBehaviour
         {
             mainCamera.gameObject.SetActive(
                 currentState == GameState.Select ||
+                currentState == GameState.Countdown ||
                 currentState == GameState.Result
             );
         }
@@ -123,6 +140,11 @@ public class GameManager : MonoBehaviour
 
             case GameState.Countdown:
 
+                // ★ SELECT画面を残したまま
+                if (selectPanel != null)
+                    selectPanel.SetActive(true);
+
+                // ★ カウントダウンだけ上から重ねる
                 if (countdownPanel != null)
                     countdownPanel.SetActive(true);
 
@@ -147,18 +169,13 @@ public class GameManager : MonoBehaviour
     // =========================================================
     // 従来のSTARTボタン用
     // =========================================================
-    // 今回の展示では基本的に使わない。
-    // 残しておいてもOK。
-    // =========================================================
 
     public void StartGame()
     {
-        // Select状態以外では開始しない
         if (currentState != GameState.Select)
             return;
 
 
-        // PlayerManager確認
         if (playerManager == null)
         {
             Debug.LogError(
@@ -168,10 +185,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-
-        // -----------------------------------------------------
-        // 参加人数確認
-        // -----------------------------------------------------
 
         int joinedCount = 0;
 
@@ -184,7 +197,6 @@ public class GameManager : MonoBehaviour
         }
 
 
-        // 参加者0人なら開始しない
         if (joinedCount == 0)
         {
             Debug.LogWarning(
@@ -205,25 +217,20 @@ public class GameManager : MonoBehaviour
         );
 
 
-        // カウントダウン開始
-        StartCoroutine(
-            CountdownCoroutine()
-        );
+        StartCountdown();
     }
 
 
     // =========================================================
-    // ロビーから呼ばれるゲーム開始
+    // ロビーからゲーム開始
     // =========================================================
 
     public void StartPlayingFromLobby()
     {
-        // すでにゲーム中なら何もしない
         if (currentState != GameState.Select)
             return;
 
 
-        // PlayerManager確認
         if (playerManager == null)
         {
             Debug.LogError(
@@ -233,10 +240,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-
-        // -----------------------------------------------------
-        // 参加人数確認
-        // -----------------------------------------------------
 
         int joinedCount = 0;
 
@@ -249,10 +252,10 @@ public class GameManager : MonoBehaviour
         }
 
 
-        if (joinedCount == 0)
+        if (joinedCount < 2)
         {
             Debug.LogWarning(
-                "参加プレイヤーがいないため、ゲームを開始できません。"
+                "参加人数が2人未満なので開始できません。"
             );
 
             return;
@@ -269,13 +272,37 @@ public class GameManager : MonoBehaviour
         );
 
 
-        // -----------------------------------------------------
-        // 3 → 2 → 1 → GO
-        // -----------------------------------------------------
+        StartCountdown();
+    }
 
-        StartCoroutine(
-            CountdownCoroutine()
-        );
+
+    // =========================================================
+    // カウントダウン開始
+    // =========================================================
+
+    public void StartCountdown()
+    {
+        // 既にカウントダウン中なら二重起動しない
+        if (countdownCoroutine != null)
+        {
+            return;
+        }
+
+
+        // カウントダウン表示を最初にリセット
+        if (countdownText != null)
+        {
+            countdownText.text = "10";
+        }
+
+
+        ChangeState(GameState.Countdown);
+
+
+        countdownCoroutine =
+            StartCoroutine(
+                CountdownCoroutine()
+            );
     }
 
 
@@ -283,56 +310,58 @@ public class GameManager : MonoBehaviour
     // カウントダウン
     // =========================================================
 
-    IEnumerator CountdownCoroutine()
+    private IEnumerator CountdownCoroutine()
     {
-        ChangeState(GameState.Countdown);
+        // ★必ず10秒
+        int count = 10;
 
 
-        // -----------------------------------------------------
-        // 3
-        // -----------------------------------------------------
-
-        if (countdownText != null)
+        while (count > 0)
         {
-            countdownText.text = "3";
+            // カウントダウン中でなくなったら終了
+            if (currentState != GameState.Countdown)
+            {
+                countdownCoroutine = null;
+                yield break;
+            }
+
+
+            if (countdownText != null)
+            {
+                countdownText.text =
+                    count.ToString();
+            }
+
+
+            Debug.Log(
+                "COUNTDOWN : " +
+                count
+            );
+
+
+            // =================================================
+            // ★重要
+            // InspectorのcountdownTimeは使用しない
+            // 必ず1秒待つ
+            // =================================================
+
+            yield return new WaitForSeconds(1f);
+
+
+            count--;
         }
 
-        yield return new WaitForSeconds(
-            countdownTime
-        );
 
-
-        // -----------------------------------------------------
-        // 2
-        // -----------------------------------------------------
-
-        if (countdownText != null)
-        {
-            countdownText.text = "2";
-        }
-
-        yield return new WaitForSeconds(
-            countdownTime
-        );
-
-
-        // -----------------------------------------------------
-        // 1
-        // -----------------------------------------------------
-
-        if (countdownText != null)
-        {
-            countdownText.text = "1";
-        }
-
-        yield return new WaitForSeconds(
-            countdownTime
-        );
-
-
-        // -----------------------------------------------------
+        // =====================================================
         // GO!
-        // -----------------------------------------------------
+        // =====================================================
+
+        if (currentState != GameState.Countdown)
+        {
+            countdownCoroutine = null;
+            yield break;
+        }
+
 
         if (countdownText != null)
         {
@@ -340,9 +369,14 @@ public class GameManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
-        // ここで卵を生成
-        // -----------------------------------------------------
+        Debug.Log(
+            "===== GO! ====="
+        );
+
+
+        // =====================================================
+        // プレイヤー生成
+        // =====================================================
 
         if (playerManager != null)
         {
@@ -350,16 +384,66 @@ public class GameManager : MonoBehaviour
         }
 
 
-        yield return new WaitForSeconds(
-            0.5f
+        // GO!を0.5秒表示
+        yield return new WaitForSeconds(0.5f);
+
+
+        // =====================================================
+        // プレイ開始
+        // =====================================================
+
+        if (currentState != GameState.Countdown)
+        {
+            countdownCoroutine = null;
+            yield break;
+        }
+
+
+        countdownCoroutine = null;
+
+        StartPlaying();
+    }
+
+
+    // =========================================================
+    // ★ カウントダウンキャンセル
+    // =========================================================
+
+    public void CancelCountdown()
+    {
+        if (currentState != GameState.Countdown)
+        {
+            return;
+        }
+
+
+        Debug.Log(
+            "===== COUNTDOWN CANCEL ====="
         );
 
 
-        // -----------------------------------------------------
-        // ゲーム開始
-        // -----------------------------------------------------
+        // コルーチン停止
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(
+                countdownCoroutine
+            );
 
-        StartPlaying();
+            countdownCoroutine = null;
+        }
+
+
+        // 数字を消す
+        if (countdownText != null)
+        {
+            countdownText.text = "";
+        }
+
+
+        // SELECTへ戻す
+        ChangeState(
+            GameState.Select
+        );
     }
 
 
@@ -386,7 +470,6 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
-        // 既にResultなら何もしない
         if (currentState == GameState.Result)
             return;
 
@@ -408,21 +491,15 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToSelect()
     {
-        Debug.Log(
-            "===== RETURN TO SELECT ====="
-        );
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(
+                countdownCoroutine
+            );
 
+            countdownCoroutine = null;
+        }
 
-        // -----------------------------------------------------
-        // 実行中のカウントダウンを止める
-        // -----------------------------------------------------
-
-        StopAllCoroutines();
-
-
-        // -----------------------------------------------------
-        // PlayerManagerをリセット
-        // -----------------------------------------------------
 
         if (playerManager != null)
         {
@@ -430,19 +507,17 @@ public class GameManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
-        // カウントダウン文字を消す
-        // -----------------------------------------------------
+        if (exhibitionLobbyManager != null)
+        {
+            exhibitionLobbyManager.ReturnToLobby();
+        }
+
 
         if (countdownText != null)
         {
             countdownText.text = "";
         }
 
-
-        // -----------------------------------------------------
-        // 選択画面へ
-        // -----------------------------------------------------
 
         ChangeState(
             GameState.Select

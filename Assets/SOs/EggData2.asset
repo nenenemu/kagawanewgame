@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c7ca3295272edd4ebb6d2eccbecc3fa, type: 3}
+  m_Name: EggData2
+  m_EditorClassIdentifier: Assembly-CSharp::EggData
+  eggName: secound
+  eggPrefab: {fileID: 4418314188099058182, guid: eff900f939ae562498031fd8c791cdf0, type: 3}
+  maxHP: 100
+  moveForce: 10
+  torqueForce: 20
+  maxSpeed: 15
+  maxAngularSpeed: 12
+  mass: 1
+  extraGravity: 20
+  groundForce: 8
+  uprightStrength: 0.5
+  uprightDamping: 1.5
