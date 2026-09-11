@@ -19,7 +19,7 @@ MonoBehaviour:
   torqueForce: 20
   maxSpeed: 15
   maxAngularSpeed: 12
-  mass: 1
+  mass: 10
   extraGravity: 20
   groundForce: 8
   uprightStrength: 0.5

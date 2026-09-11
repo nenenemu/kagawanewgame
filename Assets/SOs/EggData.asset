@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: EggData
   m_EditorClassIdentifier: Assembly-CSharp::EggData
   eggName: first
-  maxHP: 100
-  hardness: 50
-  weight: 1
-  attackPower: 10
-  movePower: 10
-  maxSpeed: 15
   eggPrefab: {fileID: 3705822811418187198, guid: 523f67f245657ea4bb6ee05550536ced, type: 3}
+  maxHP: 100
+  moveForce: 10
+  torqueForce: 20
+  maxSpeed: 15
+  maxAngularSpeed: 12
+  mass: 40
+  extraGravity: 20
+  groundForce: 8
+  uprightStrength: 0.5
+  uprightDamping: 1.5

@@ -950,7 +950,7 @@ public class MultiMouseTransform : MonoBehaviour
             // épê®êßå‰
             // -------------------------------------------------
 
-            Vector3 up =
+            /*Vector3 up =
                 egg.transform.up;
 
 
@@ -972,7 +972,7 @@ public class MultiMouseTransform : MonoBehaviour
                 -rb.angularVelocity *
                 data.uprightDamping,
                 ForceMode.Force
-            );
+            );*/
 
 
             // -------------------------------------------------

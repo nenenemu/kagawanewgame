@@ -32,6 +32,14 @@ public class EggPrefab : MonoBehaviour
         {
             rb.mass =
                 eggData.mass;
+
+            // èdêSÇè≠Çµâ∫Ç∞ÇÈ
+            rb.centerOfMass =
+                new Vector3(
+                    0f,
+                    -0.25f,
+                    0f
+                );
         }
     }
 }
