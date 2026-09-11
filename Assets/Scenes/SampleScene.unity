@@ -3218,12 +3218,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MultiMouseController
   playerManager: {fileID: 2076230680}
   lobbyManager: {fileID: 2130820541}
-  showDebugLog: 1
+  showDebugLog: 0
   xSensitivity: 1
   zSensitivity: 1
   invertX: 1
   invertZ: 1
-  showRawInput: 1
+  showRawInput: 0
 --- !u!4 &1787080644
 Transform:
   m_ObjectHideFlags: 0
@@ -3838,12 +3838,12 @@ MonoBehaviour:
     spawnPoint: {fileID: 905015975}
     playerCamera: {fileID: 276034657}
     spawnedEgg: {fileID: 0}
-  - joined: 0
+  - joined: 1
     selectedEgg: {fileID: 0}
     spawnPoint: {fileID: 1552295930}
     playerCamera: {fileID: 201332059}
     spawnedEgg: {fileID: 0}
-  - joined: 0
+  - joined: 1
     selectedEgg: {fileID: 0}
     spawnPoint: {fileID: 1059222433}
     playerCamera: {fileID: 967481202}
@@ -3909,7 +3909,7 @@ MonoBehaviour:
     state: 0
     joined: 0
     ready: 0
-  lobbyTime: 60
+  readyCountdownTime: 10
   timerText: {fileID: 1690735308}
   gameManager: {fileID: 1012574368}
   playerManager: {fileID: 2076230680}

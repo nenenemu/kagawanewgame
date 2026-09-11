@@ -13,10 +13,22 @@ public class MultiMouseTransform : MonoBehaviour
     private const uint RID_INPUT = 0x10000003;
     private const uint RIM_TYPEMOUSE = 0;
 
+    // ---------------------------------------------------------
+    // マウスボタン
+    // ---------------------------------------------------------
+
     private const ushort RI_MOUSE_LEFT_BUTTON_DOWN = 0x0001;
     private const ushort RI_MOUSE_LEFT_BUTTON_UP = 0x0002;
 
+    private const ushort RI_MOUSE_RIGHT_BUTTON_DOWN = 0x0004;
+    private const ushort RI_MOUSE_RIGHT_BUTTON_UP = 0x0008;
+
     private const int GWLP_WNDPROC = -4;
+
+
+    // =========================================================
+    // Raw Input 構造体
+    // =========================================================
 
     [StructLayout(LayoutKind.Sequential)]
     private struct RAWINPUTDEVICE
@@ -27,6 +39,7 @@ public class MultiMouseTransform : MonoBehaviour
         public IntPtr hwndTarget;
     }
 
+
     [StructLayout(LayoutKind.Sequential)]
     private struct RAWINPUTHEADER
     {
@@ -36,12 +49,14 @@ public class MultiMouseTransform : MonoBehaviour
         public IntPtr wParam;
     }
 
+
     [StructLayout(LayoutKind.Sequential)]
     private struct RAWMOUSE_BUTTONS
     {
         public ushort usButtonFlags;
         public ushort usButtonData;
     }
+
 
     [StructLayout(LayoutKind.Explicit, Size = 24)]
     private struct RAWMOUSE
@@ -50,7 +65,7 @@ public class MultiMouseTransform : MonoBehaviour
         [FieldOffset(0)]
         public ushort usFlags;
 
-        // 4
+        // 2
         [FieldOffset(2)]
         public ushort padding;
 
@@ -79,12 +94,18 @@ public class MultiMouseTransform : MonoBehaviour
         public uint ulExtraInformation;
     }
 
+
     [StructLayout(LayoutKind.Sequential)]
     private struct RAWINPUT
     {
         public RAWINPUTHEADER header;
         public RAWMOUSE mouse;
     }
+
+
+    // =========================================================
+    // Window Procedure
+    // =========================================================
 
     private delegate IntPtr WndProcDelegate(
         IntPtr hWnd,
@@ -93,12 +114,18 @@ public class MultiMouseTransform : MonoBehaviour
         IntPtr lParam
     );
 
+
+    // =========================================================
+    // Win32 API
+    // =========================================================
+
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool RegisterRawInputDevices(
         [In] RAWINPUTDEVICE[] pRawInputDevices,
         uint uiNumDevices,
         uint cbSize
     );
+
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint GetRawInputData(
@@ -109,8 +136,10 @@ public class MultiMouseTransform : MonoBehaviour
         uint cbSizeHeader
     );
 
+
     [DllImport("user32.dll")]
     private static extern IntPtr GetActiveWindow();
+
 
     [DllImport("user32.dll")]
     private static extern IntPtr CallWindowProc(
@@ -121,12 +150,14 @@ public class MultiMouseTransform : MonoBehaviour
         IntPtr lParam
     );
 
+
     [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
     private static extern IntPtr SetWindowLongPtr64(
         IntPtr hWnd,
         int nIndex,
         IntPtr dwNewLong
     );
+
 
     [DllImport("user32.dll", EntryPoint = "SetWindowLongW")]
     private static extern IntPtr SetWindowLong32(
@@ -135,6 +166,7 @@ public class MultiMouseTransform : MonoBehaviour
         IntPtr dwNewLong
     );
 
+
     // =========================================================
     // Unity
     // =========================================================
@@ -142,11 +174,14 @@ public class MultiMouseTransform : MonoBehaviour
     [Header("Player Manager")]
     public PlayerManager playerManager;
 
+
     [Header("Lobby")]
     public ExhibitionLobbyManager lobbyManager;
 
+
     [Header("入力")]
     public bool showDebugLog = true;
+
 
     [Header("移動")]
     [Tooltip("Raw Input X の感度")]
@@ -161,35 +196,55 @@ public class MultiMouseTransform : MonoBehaviour
     [Tooltip("Z方向を反転")]
     public bool invertZ = true;
 
+
     [Header("デバッグ")]
     public bool showRawInput = false;
 
+
     // =========================================================
-    // 内部データ
+    // 内部入力データ
     // =========================================================
 
     private class MouseInputData
     {
         public Vector2 delta;
+
         public bool leftDown;
         public bool leftUp;
+
+        public bool rightDown;
+        public bool rightUp;
     }
 
-    // 物理マウスのデバイスID → P番号
+
+    // =========================================================
+    // 物理マウス → P番号
+    // =========================================================
+
     private Dictionary<IntPtr, int> deviceToPlayer =
         new Dictionary<IntPtr, int>();
 
-    // P1～P4の入力
+
+    // =========================================================
+    // P1～P4入力
+    // =========================================================
+
     private MouseInputData[] mouseInputs =
         new MouseInputData[4];
 
-    // Raw Input用
+
+    // =========================================================
+    // Raw Input
+    // =========================================================
+
     private IntPtr windowHandle = IntPtr.Zero;
+
     private IntPtr originalWndProc = IntPtr.Zero;
 
     private WndProcDelegate wndProcDelegate;
 
     private bool rawInputInitialized = false;
+
 
     // =========================================================
     // Awake
@@ -197,21 +252,52 @@ public class MultiMouseTransform : MonoBehaviour
 
     void Awake()
     {
+        // -----------------------------------------------------
+        // 入力データ初期化
+        // -----------------------------------------------------
+
         for (int i = 0; i < 4; i++)
-            mouseInputs[i] = new MouseInputData();
+        {
+            mouseInputs[i] =
+                new MouseInputData();
+        }
+
+
+        // -----------------------------------------------------
+        // PlayerManager
+        // -----------------------------------------------------
 
         if (playerManager == null)
-            playerManager = FindFirstObjectByType<PlayerManager>();
+        {
+            playerManager =
+                FindFirstObjectByType<PlayerManager>();
+        }
+
+
+        // -----------------------------------------------------
+        // LobbyManager
+        // -----------------------------------------------------
 
         if (lobbyManager == null)
-            lobbyManager = FindFirstObjectByType<ExhibitionLobbyManager>();
+        {
+            lobbyManager =
+                FindFirstObjectByType<ExhibitionLobbyManager>();
+        }
+
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+
         InitializeRawInput();
+
 #else
-    Debug.LogWarning("MultiMouseTransform : Windows版ではありません。");
+
+        Debug.LogWarning(
+            "MultiMouseTransform : Windows版ではありません。"
+        );
+
 #endif
     }
+
 
     // =========================================================
     // Raw Input 初期化
@@ -219,30 +305,43 @@ public class MultiMouseTransform : MonoBehaviour
 
     private void InitializeRawInput()
     {
-        windowHandle = GetActiveWindow();
+        windowHandle =
+            GetActiveWindow();
+
 
         if (windowHandle == IntPtr.Zero)
         {
             Debug.LogError(
-                "MultiMouseTransform : UnityのWindow Handleを取得できません。"
+                "MultiMouseTransform : " +
+                "UnityのWindow Handleを取得できません。"
             );
 
             return;
         }
 
+
         RAWINPUTDEVICE[] devices =
             new RAWINPUTDEVICE[1];
 
+
         // Generic Desktop Controls
-        devices[0].usUsagePage = 0x01;
+        devices[0].usUsagePage =
+            0x01;
+
 
         // Mouse
-        devices[0].usUsage = 0x02;
+        devices[0].usUsage =
+            0x02;
+
 
         // アプリがバックグラウンドでも受け取れる
-        devices[0].dwFlags = 0x00000100;
+        devices[0].dwFlags =
+            0x00000100;
 
-        devices[0].hwndTarget = windowHandle;
+
+        devices[0].hwndTarget =
+            windowHandle;
+
 
         bool result =
             RegisterRawInputDevices(
@@ -253,23 +352,31 @@ public class MultiMouseTransform : MonoBehaviour
                 )
             );
 
+
         if (!result)
         {
             Debug.LogError(
-                "MultiMouseTransform : Raw Input登録失敗"
+                "MultiMouseTransform : " +
+                "Raw Input登録失敗"
             );
 
             return;
         }
 
-        // WndProcを差し替える
+
+        // -----------------------------------------------------
+        // WndProc差し替え
+        // -----------------------------------------------------
+
         wndProcDelegate =
             CustomWndProc;
+
 
         IntPtr newWndProc =
             Marshal.GetFunctionPointerForDelegate(
                 wndProcDelegate
             );
+
 
         if (IntPtr.Size == 8)
         {
@@ -290,12 +397,16 @@ public class MultiMouseTransform : MonoBehaviour
                 );
         }
 
+
         rawInputInitialized = true;
 
+
         Debug.Log(
-            "MultiMouseTransform : Raw Input 初期化完了"
+            "MultiMouseTransform : " +
+            "Raw Input 初期化完了"
         );
     }
+
 
     // =========================================================
     // WndProc
@@ -313,6 +424,7 @@ public class MultiMouseTransform : MonoBehaviour
             ProcessRawInput(lParam);
         }
 
+
         if (originalWndProc != IntPtr.Zero)
         {
             return CallWindowProc(
@@ -324,21 +436,27 @@ public class MultiMouseTransform : MonoBehaviour
             );
         }
 
+
         return IntPtr.Zero;
     }
+
 
     // =========================================================
     // Raw Input解析
     // =========================================================
 
-    private void ProcessRawInput(IntPtr lParam)
+    private void ProcessRawInput(
+        IntPtr lParam
+    )
     {
         uint size = 0;
+
 
         uint headerSize =
             (uint)Marshal.SizeOf(
                 typeof(RAWINPUTHEADER)
             );
+
 
         GetRawInputData(
             lParam,
@@ -348,13 +466,16 @@ public class MultiMouseTransform : MonoBehaviour
             headerSize
         );
 
+
         if (size == 0)
             return;
+
 
         IntPtr buffer =
             Marshal.AllocHGlobal(
                 (int)size
             );
+
 
         try
         {
@@ -367,22 +488,39 @@ public class MultiMouseTransform : MonoBehaviour
                     headerSize
                 );
 
+
             if (result == 0xFFFFFFFF)
                 return;
+
 
             RAWINPUT raw =
                 Marshal.PtrToStructure<RAWINPUT>(
                     buffer
                 );
 
-            if (raw.header.dwType != RIM_TYPEMOUSE)
+
+            // -------------------------------------------------
+            // マウス以外は無視
+            // -------------------------------------------------
+
+            if (raw.header.dwType !=
+                RIM_TYPEMOUSE)
+            {
                 return;
+            }
+
+
+            // -------------------------------------------------
+            // 物理デバイス取得
+            // -------------------------------------------------
 
             IntPtr device =
                 raw.header.hDevice;
 
+
             int playerIndex =
                 GetPlayerIndex(device);
+
 
             if (playerIndex < 0 ||
                 playerIndex >= 4)
@@ -390,16 +528,28 @@ public class MultiMouseTransform : MonoBehaviour
                 return;
             }
 
+
+            // -------------------------------------------------
+            // 移動量
+            // -------------------------------------------------
+
             int x =
                 raw.mouse.lLastX;
 
             int y =
                 raw.mouse.lLastY;
 
+
+            // -------------------------------------------------
+            // ボタン
+            // -------------------------------------------------
+
             ushort buttons =
                 raw.mouse.usButtonFlags;
 
-            if (buttons != 0)
+
+            if (showDebugLog &&
+                buttons != 0)
             {
                 Debug.Log(
                     "P" +
@@ -409,20 +559,61 @@ public class MultiMouseTransform : MonoBehaviour
                 );
             }
 
+
+            // -------------------------------------------------
+            // 移動量を蓄積
+            // -------------------------------------------------
+
             mouseInputs[playerIndex].delta +=
-                new Vector2(x, y);
+                new Vector2(
+                    x,
+                    y
+                );
+
+
+            // =================================================
+            // 左クリック
+            // =================================================
 
             if ((buttons &
                  RI_MOUSE_LEFT_BUTTON_DOWN) != 0)
             {
-                mouseInputs[playerIndex].leftDown = true;
+                mouseInputs[playerIndex].leftDown =
+                    true;
             }
+
 
             if ((buttons &
                  RI_MOUSE_LEFT_BUTTON_UP) != 0)
             {
-                mouseInputs[playerIndex].leftUp = true;
+                mouseInputs[playerIndex].leftUp =
+                    true;
             }
+
+
+            // =================================================
+            // 右クリック
+            // =================================================
+
+            if ((buttons &
+                 RI_MOUSE_RIGHT_BUTTON_DOWN) != 0)
+            {
+                mouseInputs[playerIndex].rightDown =
+                    true;
+            }
+
+
+            if ((buttons &
+                 RI_MOUSE_RIGHT_BUTTON_UP) != 0)
+            {
+                mouseInputs[playerIndex].rightUp =
+                    true;
+            }
+
+
+            // -------------------------------------------------
+            // Raw Inputデバッグ
+            // -------------------------------------------------
 
             if (showRawInput)
             {
@@ -433,26 +624,38 @@ public class MultiMouseTransform : MonoBehaviour
                     x +
                     "," +
                     y +
-                    ")"
+                    ")" +
+                    " Buttons=" +
+                    buttons
                 );
             }
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            Marshal.FreeHGlobal(
+                buffer
+            );
         }
     }
+
 
     // =========================================================
     // 物理マウス → P番号
     // =========================================================
 
-    private int GetPlayerIndex(IntPtr device)
+    private int GetPlayerIndex(
+        IntPtr device
+    )
     {
         if (device == IntPtr.Zero)
         {
             return -1;
         }
+
+
+        // -----------------------------------------------------
+        // すでに登録済み
+        // -----------------------------------------------------
 
         if (deviceToPlayer.TryGetValue(
                 device,
@@ -461,7 +664,11 @@ public class MultiMouseTransform : MonoBehaviour
             return existingPlayer;
         }
 
-        // 新しい物理マウス
+
+        // -----------------------------------------------------
+        // 5台目以降
+        // -----------------------------------------------------
+
         if (deviceToPlayer.Count >= 4)
         {
             Debug.LogWarning(
@@ -471,13 +678,20 @@ public class MultiMouseTransform : MonoBehaviour
             return -1;
         }
 
+
+        // -----------------------------------------------------
+        // 新しいマウス
+        // -----------------------------------------------------
+
         int newPlayer =
             deviceToPlayer.Count;
+
 
         deviceToPlayer.Add(
             device,
             newPlayer
         );
+
 
         Debug.Log(
             "物理マウス登録 : " +
@@ -485,8 +699,10 @@ public class MultiMouseTransform : MonoBehaviour
             "P"
         );
 
+
         return newPlayer;
     }
+
 
     // =========================================================
     // Update
@@ -499,41 +715,77 @@ public class MultiMouseTransform : MonoBehaviour
             MouseInputData input =
                 mouseInputs[i];
 
+
             bool hasMovement =
                 input.delta.sqrMagnitude > 0f;
 
-            bool hasClick =
+
+            bool hasLeftClick =
                 input.leftDown;
 
-            // -------------------------------------------------
+
+            bool hasRightClick =
+                input.rightDown;
+
+
+            // =================================================
             // ロビー
-            // -------------------------------------------------
+            // =================================================
 
             if (lobbyManager != null &&
                 !lobbyManager.IsGameStarted())
             {
-                if (hasMovement)
+                // -------------------------------------------------
+                // ★右クリック → 参加
+                // -------------------------------------------------
+
+                if (hasRightClick)
                 {
-                    lobbyManager.OnPlayerMouseInput(i);
+                    Debug.Log(
+                        "P" +
+                        (i + 1) +
+                        " RIGHT CLICK"
+                    );
+
+
+                    lobbyManager.OnPlayerMouseRightClick(
+                        i
+                    );
                 }
 
-                if (hasClick)
-                {
-                    Debug.Log("P" + (i + 1) + " LEFT CLICK");
 
-                    if (lobbyManager != null &&
-                        !lobbyManager.IsGameStarted())
-                    {
-                        lobbyManager.OnPlayerMouseClick(i);
-                    }
+                // -------------------------------------------------
+                // ★左クリック → READY切り替え
+                // -------------------------------------------------
+
+                if (hasLeftClick)
+                {
+                    Debug.Log(
+                        "P" +
+                        (i + 1) +
+                        " LEFT CLICK"
+                    );
+
+
+                    lobbyManager.OnPlayerMouseLeftClick(
+                        i
+                    );
                 }
+
+
+                // -------------------------------------------------
+                // ★マウス移動では何もしない
+                // -------------------------------------------------
             }
 
-            // -------------------------------------------------
+
+            // =================================================
             // ゲーム中
-            // -------------------------------------------------
+            // =================================================
 
             if (playerManager != null &&
+                lobbyManager != null &&
+                lobbyManager.IsGameStarted() &&
                 hasMovement)
             {
                 MovePlayer(
@@ -542,15 +794,28 @@ public class MultiMouseTransform : MonoBehaviour
                 );
             }
 
-            // -------------------------------------------------
-            // 入力リセット
-            // -------------------------------------------------
 
-            input.delta = Vector2.zero;
-            input.leftDown = false;
-            input.leftUp = false;
+            // =================================================
+            // 入力リセット
+            // =================================================
+
+            input.delta =
+                Vector2.zero;
+
+            input.leftDown =
+                false;
+
+            input.leftUp =
+                false;
+
+            input.rightDown =
+                false;
+
+            input.rightUp =
+                false;
         }
     }
+
 
     // =========================================================
     // プレイヤーを動かす
@@ -561,139 +826,155 @@ public class MultiMouseTransform : MonoBehaviour
         Vector2 delta
     )
     {
-
-
-
-
         if (playerManager == null)
             return;
 
+
         if (playerIndex < 0 ||
             playerIndex >= playerManager.players.Length)
-        {
             return;
-        }
+
 
         PlayerManager.PlayerData player =
             playerManager.players[playerIndex];
 
+
         if (!player.joined)
             return;
+
 
         if (player.spawnedEgg == null)
             return;
 
+
         GameObject egg =
             player.spawnedEgg;
+
 
         Rigidbody rb =
             egg.GetComponent<Rigidbody>();
 
-        Debug.Log(
-    "P" + (playerIndex + 1) +
-    " Rigidbody = " +
-    (rb != null ? "あり" : "NULL")
-);
-
 
         if (rb == null)
-        {
-            Debug.LogError(
-                "P" +
-                (playerIndex + 1) +
-                " : 卵にRigidbodyがありません。"
-            );
-
             return;
-        }
+
 
         EggPrefab eggPrefab =
             egg.GetComponent<EggPrefab>();
 
-        if (eggPrefab == null)
-        {
-            Debug.LogError(
-                "P" +
-                (playerIndex + 1) +
-                " : 卵にEggPrefabがありません。"
-            );
 
+        if (eggPrefab == null)
             return;
-        }
+
 
         EggData data =
             eggPrefab.eggData;
 
+
         if (data == null)
-        {
-            Debug.LogError(
-                "P" +
-                (playerIndex + 1) +
-                " : EggDataがありません。"
-            );
-
             return;
-        }
 
-        // -------------------------------------------------
-        // 方向
-        // 以前動いていた方式と同じく
-        // ワールド座標で直接動かす
-        // -------------------------------------------------
 
-        float x =
-            delta.x *
-            xSensitivity;
+        // =====================================================
+        // プレイヤー専用カメラ
+        // =====================================================
 
-        float z =
-            delta.y *
-            zSensitivity;
+        Camera cam =
+            player.playerCamera;
+
+
+        if (cam == null)
+            return;
+
+
+        // =====================================================
+        // カメラ基準の前・右
+        // =====================================================
+
+        Vector3 forward =
+            cam.transform.forward;
+
+        Vector3 right =
+            cam.transform.right;
+
+
+        // Y方向を無視
+        forward.y = 0f;
+        right.y = 0f;
+
+
+        forward.Normalize();
+        right.Normalize();
+
+
+        // =====================================================
+        // マウス入力
+        // =====================================================
+
+        float horizontal =
+            -delta.x * xSensitivity;
+
+        float vertical =
+            -delta.y * zSensitivity;
+
+
+        // -----------------------------------------------------
+        // Inspectorの反転設定
+        // -----------------------------------------------------
 
         if (invertX)
-            x = -x;
+        {
+            horizontal =
+                -horizontal;
+        }
+
 
         if (invertZ)
-            z = -z;
+        {
+            vertical =
+                -vertical;
+        }
+
+
+        // =====================================================
+        // カメラ基準で移動
+        // =====================================================
 
         Vector3 move =
-            new Vector3(
-                x,
-                0f,
-                z
-            );
-
-        // -------------------------------------------------
-        // 移動
-        // -------------------------------------------------
+            right * horizontal +
+            forward * vertical;
 
 
+        // =====================================================
+        // 力
+        // =====================================================
 
         rb.AddForce(
-            move *
-            data.moveForce,
+            move * data.moveForce,
             ForceMode.Force
         );
 
-        // -------------------------------------------------
+
+        // =====================================================
         // 回転
-        // -------------------------------------------------
+        // =====================================================
 
         Vector3 torque =
-            new Vector3(
-                0f,
-                x,
-                -z
+            Vector3.Cross(
+                Vector3.up,
+                move
             );
 
+
         rb.AddTorque(
-            torque *
-            data.torqueForce,
+            torque * data.torqueForce,
             ForceMode.Force
         );
 
-        // -------------------------------------------------
-        // 最高速度
-        // -------------------------------------------------
+
+        // =====================================================
+        // 速度制限
+        // =====================================================
 
         rb.linearVelocity =
             Vector3.ClampMagnitude(
@@ -701,12 +982,14 @@ public class MultiMouseTransform : MonoBehaviour
                 data.maxSpeed
             );
 
+
         rb.angularVelocity =
             Vector3.ClampMagnitude(
                 rb.angularVelocity,
                 data.maxAngularSpeed
             );
     }
+
 
     // =========================================================
     // Ground / 姿勢制御
@@ -717,28 +1000,36 @@ public class MultiMouseTransform : MonoBehaviour
         if (playerManager == null)
             return;
 
+
         for (int i = 0; i < 4; i++)
         {
             if (i >= playerManager.players.Length)
                 continue;
 
+
             PlayerManager.PlayerData player =
                 playerManager.players[i];
+
 
             if (!player.joined)
                 continue;
 
+
             if (player.spawnedEgg == null)
                 continue;
+
 
             GameObject egg =
                 player.spawnedEgg;
 
+
             Rigidbody rb =
                 egg.GetComponent<Rigidbody>();
 
+
             EggPrefab eggPrefab =
                 egg.GetComponent<EggPrefab>();
+
 
             if (rb == null ||
                 eggPrefab == null ||
@@ -747,12 +1038,14 @@ public class MultiMouseTransform : MonoBehaviour
                 continue;
             }
 
+
             EggData data =
                 eggPrefab.eggData;
 
-            // -------------------------------------------------
+
+            // =================================================
             // 重力追加
-            // -------------------------------------------------
+            // =================================================
 
             rb.AddForce(
                 Vector3.down *
@@ -760,12 +1053,14 @@ public class MultiMouseTransform : MonoBehaviour
                 ForceMode.Force
             );
 
-            // -------------------------------------------------
+
+            // =================================================
             // 卵をある程度起こす
-            // -------------------------------------------------
+            // =================================================
 
             Vector3 up =
                 egg.transform.up;
+
 
             Vector3 torqueAxis =
                 Vector3.Cross(
@@ -773,11 +1068,13 @@ public class MultiMouseTransform : MonoBehaviour
                     Vector3.up
                 );
 
+
             rb.AddTorque(
                 torqueAxis *
                 data.uprightStrength,
                 ForceMode.Force
             );
+
 
             rb.AddTorque(
                 -rb.angularVelocity *
@@ -785,13 +1082,16 @@ public class MultiMouseTransform : MonoBehaviour
                 ForceMode.Force
             );
 
-            // -------------------------------------------------
+
+            // =================================================
             // 地面方向への安定化
-            // -------------------------------------------------
+            // =================================================
 
             RaycastHit hit;
 
-            float rayDistance = 1.5f;
+            float rayDistance =
+                1.5f;
+
 
             if (Physics.Raycast(
                     egg.transform.position,
@@ -811,6 +1111,7 @@ public class MultiMouseTransform : MonoBehaviour
             }
         }
     }
+
 
     // =========================================================
     // 終了処理
