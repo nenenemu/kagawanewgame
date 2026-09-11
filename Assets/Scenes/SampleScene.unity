@@ -736,8 +736,8 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
-    height: 1
+    width: 0.5
+    height: 0.5
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -1021,10 +1021,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    x: 0.5
+    y: 0.5
+    width: 0.5
+    height: 0.5
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -2382,10 +2382,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
+    x: 0.5
     y: 0
-    width: 1
-    height: 1
+    width: 0.5
+    height: 0.5
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -2868,9 +2868,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
-    width: 1
-    height: 1
+    y: 0.5
+    width: 0.5
+    height: 0.5
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -3221,8 +3221,8 @@ MonoBehaviour:
   showDebugLog: 0
   xSensitivity: 1
   zSensitivity: 1
-  invertX: 1
-  invertZ: 1
+  invertX: 0
+  invertZ: 0
   showRawInput: 0
 --- !u!4 &1787080644
 Transform:
@@ -3897,23 +3897,29 @@ MonoBehaviour:
     state: 0
     joined: 0
     ready: 0
+    selectedEggIndex: 0
   - ui: {fileID: 151190258}
     state: 0
     joined: 0
     ready: 0
+    selectedEggIndex: 0
   - ui: {fileID: 1832024053}
     state: 0
     joined: 0
     ready: 0
+    selectedEggIndex: 0
   - ui: {fileID: 1325506675}
     state: 0
     joined: 0
     ready: 0
+    selectedEggIndex: 0
+  selectableEggs:
+  - {fileID: 11400000, guid: 204103fd44ca4ad4bac8f37bb6fca21e, type: 2}
+  defaultEgg: {fileID: 11400000, guid: 204103fd44ca4ad4bac8f37bb6fca21e, type: 2}
   readyCountdownTime: 10
   timerText: {fileID: 1690735308}
   gameManager: {fileID: 1012574368}
   playerManager: {fileID: 2076230680}
-  defaultEgg: {fileID: 11400000, guid: 204103fd44ca4ad4bac8f37bb6fca21e, type: 2}
 --- !u!4 &2130820542
 Transform:
   m_ObjectHideFlags: 0

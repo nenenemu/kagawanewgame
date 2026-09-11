@@ -25,13 +25,18 @@ public class ExhibitionLobbyManager : MonoBehaviour
         public PlayerLobbyUI ui;
 
         [HideInInspector]
-        public LobbyPlayerState state = LobbyPlayerState.Waiting;
+        public LobbyPlayerState state =
+            LobbyPlayerState.Waiting;
 
         [HideInInspector]
         public bool joined = false;
 
         [HideInInspector]
         public bool ready = false;
+
+        // 現在選択しているキャラクター番号
+        [HideInInspector]
+        public int selectedEggIndex = 0;
     }
 
 
@@ -48,7 +53,21 @@ public class ExhibitionLobbyManager : MonoBehaviour
     // =========================================================
 
     [Header("プレイヤー")]
-    public LobbyPlayer[] players = new LobbyPlayer[4];
+    public LobbyPlayer[] players =
+        new LobbyPlayer[4];
+
+
+    // =========================================================
+    // キャラクター
+    // =========================================================
+
+    [Header("キャラクター")]
+    [Tooltip("右クリックで順番に切り替えるEggData")]
+    public EggData[] selectableEggs;
+
+
+    [Tooltip("キャラクターが未設定の場合に使用")]
+    public EggData defaultEgg;
 
 
     // =========================================================
@@ -85,15 +104,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // 仮の卵
-    // =========================================================
-
-    [Header("仮の卵")]
-    [Tooltip("キャラ選択がまだ未実装の間に使う卵")]
-    public EggData defaultEgg;
-
-
-    // =========================================================
     // 内部状態
     // =========================================================
 
@@ -107,12 +117,13 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // 初期化
+    // Start
     // =========================================================
 
     void Start()
     {
-        currentState = LobbyState.Waiting;
+        currentState =
+            LobbyState.Waiting;
 
         gameStarted = false;
 
@@ -139,6 +150,8 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
             players[i].ready = false;
 
+            players[i].selectedEggIndex = 0;
+
 
             if (players[i].ui != null)
             {
@@ -151,14 +164,20 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // 右クリック
-    // 未参加 → 参加
+    // 左クリック
+    //
+    // 未参加       → 参加
+    // SELECTING   → READY
+    // READY       → SELECTING
     // =========================================================
 
-    public void OnPlayerMouseRightClick(int playerIndex)
+    public void OnPlayerMouseLeftClick(
+        int playerIndex
+    )
     {
         if (gameStarted)
             return;
+
 
         if (playerIndex < 0 ||
             playerIndex >= players.Length)
@@ -169,67 +188,28 @@ public class ExhibitionLobbyManager : MonoBehaviour
             players[playerIndex];
 
 
-        // -----------------------------------------------------
-        // まだ参加していない場合だけ参加
-        // -----------------------------------------------------
+        // =====================================================
+        // 未参加 → 参加
+        // =====================================================
 
         if (!player.joined)
         {
+            Debug.Log(
+                "P" +
+                (playerIndex + 1) +
+                " : LEFT CLICK → 参加"
+            );
+
+
             JoinPlayer(playerIndex);
 
             return;
         }
 
 
-        // -----------------------------------------------------
-        // すでに参加している場合
-        // -----------------------------------------------------
-        // 右クリックでは何もしない
-
-        Debug.Log(
-            "P" + (playerIndex + 1) +
-            " : すでに参加済み"
-        );
-    }
-
-
-    // =========================================================
-    // 左クリック
-    // SELECT ↔ READY
-    // =========================================================
-
-    public void OnPlayerMouseLeftClick(int playerIndex)
-    {
-        if (gameStarted)
-            return;
-
-        if (playerIndex < 0 ||
-            playerIndex >= players.Length)
-            return;
-
-
-        LobbyPlayer player =
-            players[playerIndex];
-
-
-        // -----------------------------------------------------
-        // 未参加なら何もしない
-        // -----------------------------------------------------
-
-        if (!player.joined)
-        {
-            Debug.Log(
-                "P" + (playerIndex + 1) +
-                " : 未参加なのでLEFT CLICK無効"
-            );
-
-            return;
-        }
-
-
-        // -----------------------------------------------------
+        // =====================================================
         // SELECTING → READY
-        // -----------------------------------------------------
+        // =====================================================
 
         if (player.state ==
             LobbyPlayerState.Selecting)
@@ -240,9 +220,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
+        // =====================================================
         // READY → SELECTING
-        // -----------------------------------------------------
+        // =====================================================
 
         if (player.state ==
             LobbyPlayerState.Ready)
@@ -251,6 +231,163 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
             return;
         }
+    }
+
+
+    // =========================================================
+    // 右クリック
+    //
+    // 未参加 → 無視
+    // 参加済み → キャラクター変更
+    // =========================================================
+
+    public void OnPlayerMouseRightClick(
+        int playerIndex
+    )
+    {
+        if (gameStarted)
+            return;
+
+
+        if (playerIndex < 0 ||
+            playerIndex >= players.Length)
+            return;
+
+
+        LobbyPlayer player =
+            players[playerIndex];
+
+
+        // =====================================================
+        // 未参加
+        // =====================================================
+
+        if (!player.joined)
+        {
+            Debug.Log(
+                "P" +
+                (playerIndex + 1) +
+                " : 未参加なのでRIGHT CLICK無効"
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // キャラクター変更
+        // =====================================================
+
+        ChangeCharacter(playerIndex);
+    }
+
+
+    // =========================================================
+    // キャラクター変更
+    // =========================================================
+
+    void ChangeCharacter(int playerIndex)
+    {
+        LobbyPlayer player =
+            players[playerIndex];
+
+
+        // -----------------------------------------------------
+        // キャラクターが登録されていない
+        // -----------------------------------------------------
+
+        if (selectableEggs == null ||
+            selectableEggs.Length == 0)
+        {
+            Debug.LogWarning(
+                "P" +
+                (playerIndex + 1) +
+                " : selectableEggsが設定されていません。"
+            );
+
+            return;
+        }
+
+
+        // -----------------------------------------------------
+        // 次のキャラクターへ
+        // -----------------------------------------------------
+
+        player.selectedEggIndex++;
+
+
+        if (player.selectedEggIndex >=
+            selectableEggs.Length)
+        {
+            player.selectedEggIndex = 0;
+        }
+
+
+        EggData selectedEgg =
+            selectableEggs[
+                player.selectedEggIndex
+            ];
+
+
+        if (selectedEgg == null)
+        {
+            Debug.LogWarning(
+                "P" +
+                (playerIndex + 1) +
+                " : 選択されたEggDataがnullです。"
+            );
+
+            return;
+        }
+
+
+        // -----------------------------------------------------
+        // PlayerManagerへ反映
+        // -----------------------------------------------------
+
+        if (playerManager != null)
+        {
+            playerManager.SetPlayerEgg(
+                playerIndex,
+                selectedEgg
+            );
+        }
+
+
+        Debug.Log(
+            "P" +
+            (playerIndex + 1) +
+            " : キャラクター変更 → " +
+            selectedEgg.name
+        );
+
+
+        // -----------------------------------------------------
+        // キャラクター変更したらREADY解除
+        // -----------------------------------------------------
+
+        if (player.state ==
+            LobbyPlayerState.Ready)
+        {
+            player.ready = false;
+
+            player.state =
+                LobbyPlayerState.Selecting;
+
+
+            if (player.ui != null)
+            {
+                player.ui.SetState(
+                    PlayerLobbyUI.UIState.Selecting
+                );
+            }
+
+
+            CancelCountdownIfRunning();
+        }
+
+
+        CheckStartCondition();
     }
 
 
@@ -271,10 +408,12 @@ public class ExhibitionLobbyManager : MonoBehaviour
         player.state =
             LobbyPlayerState.Selecting;
 
+        player.selectedEggIndex = 0;
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // PlayerManager
-        // -----------------------------------------------------
+        // =====================================================
 
         if (playerManager != null)
         {
@@ -284,19 +423,23 @@ public class ExhibitionLobbyManager : MonoBehaviour
             );
 
 
-            if (defaultEgg != null)
+            EggData firstEgg =
+                GetFirstEgg();
+
+
+            if (firstEgg != null)
             {
                 playerManager.SetPlayerEgg(
                     playerIndex,
-                    defaultEgg
+                    firstEgg
                 );
             }
         }
 
 
-        // -----------------------------------------------------
+        // =====================================================
         // UI
-        // -----------------------------------------------------
+        // =====================================================
 
         if (player.ui != null)
         {
@@ -307,23 +450,33 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         Debug.Log(
-            "P" + (playerIndex + 1) +
+            "P" +
+            (playerIndex + 1) +
             " : 参加"
         );
 
 
-        // -----------------------------------------------------
-        // カウントダウン中ならキャンセル
-        // -----------------------------------------------------
-
         CancelCountdownIfRunning();
 
-
-        // -----------------------------------------------------
-        // READY条件チェック
-        // -----------------------------------------------------
-
         CheckStartCondition();
+    }
+
+
+    // =========================================================
+    // 最初のEggData
+    // =========================================================
+
+    EggData GetFirstEgg()
+    {
+        if (selectableEggs != null &&
+            selectableEggs.Length > 0)
+        {
+            if (selectableEggs[0] != null)
+                return selectableEggs[0];
+        }
+
+
+        return defaultEgg;
     }
 
 
@@ -352,14 +505,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         Debug.Log(
-            "P" + (playerIndex + 1) +
+            "P" +
+            (playerIndex + 1) +
             " : READY"
         );
 
-
-        // -----------------------------------------------------
-        // READY条件チェック
-        // -----------------------------------------------------
 
         CheckStartCondition();
     }
@@ -390,28 +540,20 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         Debug.Log(
-            "P" + (playerIndex + 1) +
+            "P" +
+            (playerIndex + 1) +
             " : READY解除"
         );
 
 
-        // -----------------------------------------------------
-        // カウントダウン中なら即キャンセル
-        // -----------------------------------------------------
-
         CancelCountdownIfRunning();
-
-
-        // -----------------------------------------------------
-        // 条件チェック
-        // -----------------------------------------------------
 
         CheckStartCondition();
     }
 
 
     // =========================================================
-    // ゲーム開始条件チェック
+    // ゲーム開始条件
     // =========================================================
 
     void CheckStartCondition()
@@ -424,10 +566,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         bool allReady = true;
 
-
-        // -----------------------------------------------------
-        // 参加人数とREADY状態を確認
-        // -----------------------------------------------------
 
         for (int i = 0; i < players.Length; i++)
         {
@@ -457,52 +595,40 @@ public class ExhibitionLobbyManager : MonoBehaviour
         );
 
 
-        // -----------------------------------------------------
         // 2人未満
-        // -----------------------------------------------------
-
         if (joinedCount < 2)
         {
             return;
         }
 
 
-        // -----------------------------------------------------
         // 全員READYではない
-        // -----------------------------------------------------
-
         if (!allReady)
         {
             return;
         }
 
 
-        // -----------------------------------------------------
         // すでにカウントダウン中
-        // -----------------------------------------------------
-
         if (countdownRunning)
         {
             return;
         }
 
 
-        // -----------------------------------------------------
-        // 条件成立
-        // -----------------------------------------------------
-
         StartReadyCountdown();
     }
 
 
     // =========================================================
-    // 10秒カウントダウン開始
+    // READYカウントダウン開始
     // =========================================================
 
     void StartReadyCountdown()
     {
         if (gameStarted)
             return;
+
 
         if (countdownRunning)
             return;
@@ -546,10 +672,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         while (remaining > 0f)
         {
-            // -------------------------------------------------
-            // 毎フレーム、開始条件が維持されているか確認
-            // -------------------------------------------------
-
             if (!IsStartConditionValid())
             {
                 CancelReadyCountdown();
@@ -557,10 +679,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
                 yield break;
             }
 
-
-            // -------------------------------------------------
-            // UI
-            // -------------------------------------------------
 
             if (timerText != null)
             {
@@ -582,10 +700,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
-        // 0秒
-        // -----------------------------------------------------
-
         if (!IsStartConditionValid())
         {
             CancelReadyCountdown();
@@ -600,10 +714,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
-        // ゲーム開始
-        // -----------------------------------------------------
-
         Debug.Log(
             "===== READY COUNTDOWN END ====="
         );
@@ -614,20 +724,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
         currentState =
             LobbyState.Waiting;
 
-
         gameStarted = true;
 
 
-        // -----------------------------------------------------
-        // PlayerManagerへ最終反映
-        // -----------------------------------------------------
-
         ApplyPlayersToPlayerManager();
 
-
-        // -----------------------------------------------------
-        // GameManagerへ
-        // -----------------------------------------------------
 
         if (gameManager != null)
         {
@@ -644,7 +745,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // 開始条件がまだ有効か
+    // 開始条件確認
     // =========================================================
 
     bool IsStartConditionValid()
@@ -672,7 +773,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // 2人以上必要
         if (joinedCount < 2)
         {
             return false;
@@ -709,7 +809,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         countdownRunning = false;
-
 
         currentState =
             LobbyState.Waiting;
@@ -760,8 +859,36 @@ public class ExhibitionLobbyManager : MonoBehaviour
             );
 
 
+            // -------------------------------------------------
+            // 選択中キャラクターを維持
+            // -------------------------------------------------
+
             if (active &&
-                defaultEgg != null)
+                selectableEggs != null &&
+                selectableEggs.Length > 0)
+            {
+                int index =
+                    Mathf.Clamp(
+                        player.selectedEggIndex,
+                        0,
+                        selectableEggs.Length - 1
+                    );
+
+
+                EggData selectedEgg =
+                    selectableEggs[index];
+
+
+                if (selectedEgg != null)
+                {
+                    playerManager.SetPlayerEgg(
+                        i,
+                        selectedEgg
+                    );
+                }
+            }
+            else if (active &&
+                     defaultEgg != null)
             {
                 playerManager.SetPlayerEgg(
                     i,
@@ -773,7 +900,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // タイマーUI消去
+    // タイマーUI
     // =========================================================
 
     void ClearTimerUI()
@@ -786,7 +913,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // ゲーム開始済みか
+    // ゲーム開始済み
     // =========================================================
 
     public bool IsGameStarted()
@@ -796,7 +923,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
     // =========================================================
-    // ロビー中か
+    // ロビー中
     // =========================================================
 
     public bool IsLobbyActive()
@@ -846,10 +973,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
         );
 
 
-        // -----------------------------------------------------
-        // カウントダウン停止
-        // -----------------------------------------------------
-
         if (countdownCoroutine != null)
         {
             StopCoroutine(
@@ -868,10 +991,6 @@ public class ExhibitionLobbyManager : MonoBehaviour
             LobbyState.Waiting;
 
 
-        // -----------------------------------------------------
-        // プレイヤーリセット
-        // -----------------------------------------------------
-
         for (int i = 0; i < players.Length; i++)
         {
             players[i].joined = false;
@@ -880,6 +999,8 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
             players[i].state =
                 LobbyPlayerState.Waiting;
+
+            players[i].selectedEggIndex = 0;
 
 
             if (players[i].ui != null)
@@ -891,19 +1012,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
         }
 
 
-        // -----------------------------------------------------
-        // PlayerManager
-        // -----------------------------------------------------
-
         if (playerManager != null)
         {
             playerManager.ReturnToSelect();
         }
 
-
-        // -----------------------------------------------------
-        // UI
-        // -----------------------------------------------------
 
         ClearTimerUI();
     }
