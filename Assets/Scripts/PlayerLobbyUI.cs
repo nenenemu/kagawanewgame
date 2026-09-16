@@ -28,6 +28,9 @@ public class PlayerLobbyUI : MonoBehaviour
     [Header("状態表示（任意）")]
     public TMP_Text stateText;
 
+    [Header("選択画面に入ったときにアルファを変更する画像")]
+    public Image selectedImage;
+
 
     //==================================================
     // 起動時
@@ -35,8 +38,28 @@ public class PlayerLobbyUI : MonoBehaviour
 
     private void Awake()
     {
+        // 起動時はアルファ60%
+        SetImageOpacity(0.6f);
+
         // 起動したら必ず「未参加」に戻す
         SetState(UIState.Waiting);
+    }
+
+
+    //==================================================
+    // 画像のアルファ変更
+    //==================================================
+
+    private void SetImageOpacity(float opacity)
+    {
+        if (selectedImage == null)
+            return;
+
+        Color color = selectedImage.color;
+
+        color.a = opacity;
+
+        selectedImage.color = color;
     }
 
 
@@ -54,7 +77,7 @@ public class PlayerLobbyUI : MonoBehaviour
 
             case UIState.Waiting:
 
-                // PRESS LEFTだけ表示
+                // PRESS Rだけ表示
                 if (pressR != null)
                     pressR.SetActive(true);
 
@@ -89,6 +112,11 @@ public class PlayerLobbyUI : MonoBehaviour
 
                 if (stateText != null)
                     stateText.text = "SELECT";
+
+
+                // ★ キャラ選択画面に入った瞬間
+                // ★ アルファを255（100%）にする
+                SetImageOpacity(1.0f);
 
                 break;
 

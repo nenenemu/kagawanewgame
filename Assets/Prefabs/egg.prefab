@@ -65,6 +65,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a894d013cf9c9fa4b842f5bc5a17e5c3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1198001580696040191}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a894d013cf9c9fa4b842f5bc5a17e5c3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4830737260448250124}
   m_SourcePrefab: {fileID: 100100000, guid: a894d013cf9c9fa4b842f5bc5a17e5c3, type: 3}
 --- !u!1 &3705822811418187198 stripped
 GameObject:
@@ -134,3 +137,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EggPrefab
   eggData: {fileID: 0}
   currentHP: 0
+--- !u!114 &-4830737260448250124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3705822811418187198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42a4a952d0aa2b74db79140ceb5b7903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EggCollision
+  knockbackPower: 100
+  minimumSpeed: 0.5
+  maximumKnockback: 15
+  hitCooldown: 0.25
