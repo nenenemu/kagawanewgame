@@ -12,6 +12,9 @@ public class EggData : ScriptableObject
     [Header("Prefab")]
     public GameObject eggPrefab;
 
+    [Header("プレビュー用Prefab")]
+    public GameObject previewPrefab;
+
     [Header("HP")]
     public float maxHP = 100f;
 

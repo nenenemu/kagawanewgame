@@ -16,8 +16,11 @@ public class PlayerLobbyUI : MonoBehaviour
     public GameObject characterSelect;
     public GameObject readyUI;
 
-    [Header("キャラ名")]
-    public TMP_Text characterNameText;
+    [Header("キャラ画像")]
+    public Image characterImage;
+
+    [Header("キャラごとの画像")]
+    public Sprite[] characterImages;
 
     [Header("ステータス画像")]
     public Image statusImage;
@@ -30,6 +33,9 @@ public class PlayerLobbyUI : MonoBehaviour
 
     [Header("選択画面に入ったときにアルファを変更する画像")]
     public Image selectedImage;
+
+    [Header("エントリー時に表示する固定画像")]
+    public Image entryImage;
 
 
     //==================================================
@@ -87,6 +93,9 @@ public class PlayerLobbyUI : MonoBehaviour
                 if (readyUI != null)
                     readyUI.SetActive(false);
 
+                if (entryImage != null)
+                    entryImage.gameObject.SetActive(false);
+
                 if (stateText != null)
                     stateText.text = "";
 
@@ -109,6 +118,9 @@ public class PlayerLobbyUI : MonoBehaviour
 
                 if (readyUI != null)
                     readyUI.SetActive(false);
+
+                if (entryImage != null)
+                    entryImage.gameObject.SetActive(true);
 
                 if (stateText != null)
                     stateText.text = "SELECT";
@@ -137,6 +149,9 @@ public class PlayerLobbyUI : MonoBehaviour
                 if (readyUI != null)
                     readyUI.SetActive(true);
 
+                if (entryImage != null)
+                    entryImage.gameObject.SetActive(true);
+
                 if (stateText != null)
                     stateText.text = "READY";
 
@@ -149,12 +164,29 @@ public class PlayerLobbyUI : MonoBehaviour
     // キャラ名変更
     //==================================================
 
-    public void SetCharacterName(string characterName)
+    //==================================================
+    // キャラ画像変更
+    //==================================================
+
+    public void SetCharacterImage(int eggIndex)
     {
-        if (characterNameText == null)
+        if (characterImage == null)
             return;
 
-        characterNameText.text = characterName;
+        if (characterImages == null ||
+            eggIndex < 0 ||
+            eggIndex >= characterImages.Length)
+        {
+            characterImage.sprite = null;
+            characterImage.enabled = false;
+            return;
+        }
+
+        characterImage.sprite =
+            characterImages[eggIndex];
+
+        characterImage.enabled =
+            characterImages[eggIndex] != null;
     }
 
 
@@ -189,8 +221,11 @@ public class PlayerLobbyUI : MonoBehaviour
 
     private void ClearCharacterUI()
     {
-        if (characterNameText != null)
-            characterNameText.text = "";
+        if (characterImage != null)
+        {
+            characterImage.sprite = null;
+            characterImage.enabled = false;
+        }
 
         if (statusImage != null)
         {

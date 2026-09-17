@@ -453,8 +453,31 @@ public class GameManager : MonoBehaviour
 
     private void StartPlaying()
     {
+        // ==============================
+        // PLAYINGに切り替える
+        // ==============================
         ChangeState(GameState.Playing);
 
+        // ==============================
+        // プレビューを消す
+        // ==============================
+        if (exhibitionLobbyManager != null &&
+            exhibitionLobbyManager.characterPreviews != null)
+        {
+            for (int i = 0;
+                i < exhibitionLobbyManager.characterPreviews.Length;
+                i++)
+            {
+                if (exhibitionLobbyManager.characterPreviews[i] != null)
+                {
+                    exhibitionLobbyManager.characterPreviews[i].ClearPreview();
+                }
+            }
+        }
+
+        // ==============================
+        // 試合開始
+        // ==============================
         MatchScoreManager scoreManager =
             FindFirstObjectByType<MatchScoreManager>();
 
@@ -464,7 +487,7 @@ public class GameManager : MonoBehaviour
         }
 
         MatchUI matchUI =
-        FindFirstObjectByType<MatchUI>();
+            FindFirstObjectByType<MatchUI>();
 
         if (matchUI != null)
         {
@@ -550,4 +573,6 @@ public class GameManager : MonoBehaviour
             GameState.Select
         );
     }
+
+
 }

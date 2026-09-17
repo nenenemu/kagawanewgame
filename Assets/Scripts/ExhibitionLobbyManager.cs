@@ -54,6 +54,10 @@ public class ExhibitionLobbyManager : MonoBehaviour
     [Header("卵セレクト：空の場合の予備")]
     public EggData defaultEgg;
 
+    [Header("3Dキャラプレビュー")]
+    public CharacterPreview[] characterPreviews =
+        new CharacterPreview[4];
+
 
     //==================================================
     // Awake
@@ -279,6 +283,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         UpdateUI(index);
 
+        // 3Dプレビュー更新
+        UpdateCharacterPreview(index);
+
 
         Debug.Log(
             $"P{index + 1} : JOIN"
@@ -332,6 +339,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
         UpdateUI(index);
 
+        // 3Dプレビュー更新
+        UpdateCharacterPreview(index);
+
 
         EggData egg =
             GetSelectedEgg(index);
@@ -343,6 +353,40 @@ public class ExhibitionLobbyManager : MonoBehaviour
                 $"P{index + 1} : キャラ変更 → {egg.name}"
             );
         }
+    }
+
+
+    //==================================================
+    // 3Dキャラプレビュー更新
+    //==================================================
+
+    private void UpdateCharacterPreview(int index)
+    {
+        if (!IsValidPlayerIndex(index))
+            return;
+
+
+        if (characterPreviews == null)
+            return;
+
+
+        if (index >= characterPreviews.Length)
+            return;
+
+
+        CharacterPreview preview =
+            characterPreviews[index];
+
+
+        if (preview == null)
+            return;
+
+
+        EggData egg =
+            GetSelectedEgg(index);
+
+
+        preview.ShowEgg(egg);
     }
 
 
@@ -398,6 +442,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
 
 
         UpdateUI(index);
+
+
+        // READYを解除した時も
+        // 現在のキャラをプレビュー
+        UpdateCharacterPreview(index);
 
 
         Debug.Log(
@@ -543,6 +592,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
                 true
             );
 
+
             playerManager.SetPlayerEgg(
                 i,
                 egg
@@ -606,10 +656,12 @@ public class ExhibitionLobbyManager : MonoBehaviour
                 false
             );
 
+
             playerManager.SetPlayerEgg(
                 index,
                 null
             );
+
 
             return;
         }
@@ -619,6 +671,7 @@ public class ExhibitionLobbyManager : MonoBehaviour
             index,
             true
         );
+
 
         playerManager.SetPlayerEgg(
             index,
@@ -655,16 +708,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
             GetSelectedEgg(index);
 
 
-        if (egg != null)
-        {
-            player.ui.SetCharacterName(
-                egg.name
-            );
-        }
-        else
-        {
-            player.ui.SetCharacterName("");
-        }
+        player.ui.SetCharacterImage(
+    player.selectedEggIndex
+);
 
 
         player.ui.SetStatusImage(
@@ -720,7 +766,9 @@ public class ExhibitionLobbyManager : MonoBehaviour
             players[i].state =
                 LobbyPlayerState.Waiting;
 
+
             players[i].joined = false;
+
 
             players[i].selectedEggIndex = 0;
 
@@ -732,11 +780,16 @@ public class ExhibitionLobbyManager : MonoBehaviour
                     false
                 );
 
+
                 playerManager.SetPlayerEgg(
                     i,
                     null
                 );
             }
+
+
+            // 3Dプレビューを消す
+            ClearCharacterPreview(i);
 
 
             UpdateUI(i);
@@ -746,6 +799,36 @@ public class ExhibitionLobbyManager : MonoBehaviour
         Debug.Log(
             "ロビーを初期状態に戻しました。"
         );
+    }
+
+
+    //==================================================
+    // 3Dキャラプレビューを消す
+    //==================================================
+
+    private void ClearCharacterPreview(int index)
+    {
+        if (!IsValidPlayerIndex(index))
+            return;
+
+
+        if (characterPreviews == null)
+            return;
+
+
+        if (index >= characterPreviews.Length)
+            return;
+
+
+        CharacterPreview preview =
+            characterPreviews[index];
+
+
+        if (preview == null)
+            return;
+
+
+        preview.ClearPreview();
     }
 
 

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EggData
   eggName: secound
   eggPrefab: {fileID: 4418314188099058182, guid: eff900f939ae562498031fd8c791cdf0, type: 3}
+  previewPrefab: {fileID: 2899969190504712019, guid: 99b91a9b50a2aad44890cc70b2743662, type: 3}
   maxHP: 100
   moveForce: 10
   torqueForce: 20

@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42a4a952d0aa2b74db79140ceb5b7903, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EggCollision
-  knockbackPower: 1
+  knockbackPower: 100
   minimumSpeed: 0.5
   hitCooldown: 0.25
 --- !u!114 &-8924575609937731844
