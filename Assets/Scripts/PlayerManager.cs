@@ -194,6 +194,18 @@ public class PlayerManager : MonoBehaviour
         player.spawnedEgg = egg;
 
 
+        EggRespawn respawn =//’Ç‰Á•ª
+        egg.GetComponent<EggRespawn>();
+
+        if (respawn != null)
+        {
+            respawn.Initialize(
+                this,
+                playerIndex
+            );
+        }
+
+
         // =====================================================
         // EggPrefab‰Šú‰»
         // =====================================================
@@ -739,4 +751,10 @@ public class PlayerManager : MonoBehaviour
             players[i].selectedEgg = null;
         }
     }
+    public void RefreshCameras()
+    {
+        UpdateCameras();
+    }
+
+
 }

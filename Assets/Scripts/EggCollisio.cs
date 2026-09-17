@@ -14,9 +14,17 @@ public class EggCollision : MonoBehaviour
     private GameObject lastHitObject;
     private float lastHitTime = -999f;
 
+    private MatchScoreManager scoreManager;
+
+
     private void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody =
+            GetComponent<Rigidbody>();
+
+        scoreManager =
+            FindFirstObjectByType<MatchScoreManager>();
+
 
         if (myRigidbody == null)
         {
@@ -27,38 +35,52 @@ public class EggCollision : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+
+    private void OnCollisionEnter(
+        Collision collision
+    )
     {
         if (myRigidbody == null)
             return;
 
-        // ‘ŠŽè‚ÌRigidbody
-        Rigidbody targetRigidbody = collision.rigidbody;
+
+        Rigidbody targetRigidbody =
+            collision.rigidbody;
+
 
         if (targetRigidbody == null)
             return;
 
+
         if (targetRigidbody == myRigidbody)
             return;
 
-        // ‘ŠŽè‚ª—‘‚©Šm”F
+
         EggPrefab targetEgg =
             targetRigidbody.GetComponent<EggPrefab>();
+
 
         if (targetEgg == null)
             return;
 
-        // “¯‚¶‘ŠŽè‚Ö‚Ì˜A‘±ƒqƒbƒg–hŽ~
-        if (lastHitObject == targetRigidbody.gameObject &&
-            Time.time < lastHitTime + hitCooldown)
+
+        // ˜A‘±ƒqƒbƒg–hŽ~
+        if (
+            lastHitObject ==
+            targetRigidbody.gameObject
+            &&
+            Time.time <
+            lastHitTime + hitCooldown
+        )
         {
             return;
         }
 
-        // Ž©•ª‚ÌŒ»Ý‘¬“x
-        Vector3 velocity = myRigidbody.linearVelocity;
 
-        // Y•ûŒü‚Í–³Ž‹
+        Vector3 velocity =
+            myRigidbody.linearVelocity;
+
+
         Vector3 horizontalVelocity =
             new Vector3(
                 velocity.x,
@@ -66,35 +88,48 @@ public class EggCollision : MonoBehaviour
                 velocity.z
             );
 
-        // ‘¬“x
-        float speed = horizontalVelocity.magnitude;
+
+        float speed =
+            horizontalVelocity.magnitude;
+
 
         if (speed < minimumSpeed)
             return;
 
-        // Ž©•ª‚ªi‚ñ‚Å‚¢‚é•ûŒü
+
         Vector3 direction =
             horizontalVelocity.normalized;
 
-        // =========================
-        // ‚Á”ò‚Î‚µ—Ê
-        // =========================
 
         float force =
             speed * knockbackPower;
 
-        // ‘ŠŽè‚ð‚Á”ò‚Î‚·
+
         targetRigidbody.AddForce(
             direction * force,
             ForceMode.Impulse
         );
 
-        // ‹L˜^
+
+        // =====================================
+        // š’N‚ª’N‚ðUŒ‚‚µ‚½‚©‹L˜^
+        // =====================================
+
+        if (scoreManager != null)
+        {
+            scoreManager.RegisterHit(
+                gameObject,
+                targetRigidbody.gameObject
+            );
+        }
+
+
         lastHitObject =
             targetRigidbody.gameObject;
 
         lastHitTime =
             Time.time;
+
 
         Debug.Log(
             gameObject.name +

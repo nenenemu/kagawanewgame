@@ -451,16 +451,25 @@ public class GameManager : MonoBehaviour
     // PLAYING開始
     // =========================================================
 
-    public void StartPlaying()
+    private void StartPlaying()
     {
-        Debug.Log(
-            "===== PLAYING START ====="
-        );
+        ChangeState(GameState.Playing);
 
+        MatchScoreManager scoreManager =
+            FindFirstObjectByType<MatchScoreManager>();
 
-        ChangeState(
-            GameState.Playing
-        );
+        if (scoreManager != null)
+        {
+            scoreManager.StartMatch();
+        }
+
+        MatchUI matchUI =
+        FindFirstObjectByType<MatchUI>();
+
+        if (matchUI != null)
+        {
+            matchUI.StartMatchUI();
+        }
     }
 
 
@@ -482,6 +491,14 @@ public class GameManager : MonoBehaviour
         ChangeState(
             GameState.Result
         );
+
+        MatchUI matchUI =
+        FindFirstObjectByType<MatchUI>();
+
+        if (matchUI != null)
+        {
+            matchUI.ShowResult();
+        }
     }
 
 
@@ -498,6 +515,16 @@ public class GameManager : MonoBehaviour
             );
 
             countdownCoroutine = null;
+        }
+
+
+        // スコアと試合時間をリセット
+        MatchScoreManager scoreManager =
+            FindFirstObjectByType<MatchScoreManager>();
+
+        if (scoreManager != null)
+        {
+            scoreManager.ResetScore();
         }
 
 
