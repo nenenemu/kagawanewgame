@@ -36,6 +36,7 @@ public class PlayerLobbyUI : MonoBehaviour
 
     [Header("エントリー時に表示する固定画像")]
     public Image entryImage;
+    public Image entryImage2;
 
 
     //==================================================
@@ -96,6 +97,9 @@ public class PlayerLobbyUI : MonoBehaviour
                 if (entryImage != null)
                     entryImage.gameObject.SetActive(false);
 
+                if (entryImage2 != null)
+                    entryImage2.gameObject.SetActive(false);
+
                 if (stateText != null)
                     stateText.text = "";
 
@@ -121,6 +125,12 @@ public class PlayerLobbyUI : MonoBehaviour
 
                 if (entryImage != null)
                     entryImage.gameObject.SetActive(true);
+
+                if (entryImage2 != null)
+                    entryImage2.gameObject.SetActive(true);
+
+                if (entryImage2 != null)
+                    entryImage2.gameObject.SetActive(true);
 
                 if (stateText != null)
                     stateText.text = "SELECT";
