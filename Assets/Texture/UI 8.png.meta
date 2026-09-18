@@ -1,0 +1,393 @@
+fileFormatVersion: 2
+guid: 70decc5a68fc0ad4ca57d9b2e89262a0
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: UI 8_45
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 614
+        width: 145
+        height: 145
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea3767da966908b4c897b323bde4e1a8
+      internalID: -988382744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI 8_114
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 184
+        width: 430
+        height: 66
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd366972268d75740980b48b9b9e4fca
+      internalID: 1259084695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI 8_115
+      rect:
+        serializedVersion: 2
+        x: 867
+        y: 188
+        width: 430
+        height: 66
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37a9228753a3c924dabaf68ceb9521fd
+      internalID: -1020887723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI 8_1
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 543
+        width: 411
+        height: 149
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37ad24046f098a84c9c001d3db5f9e07
+      internalID: -139543232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI 8_2
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 352
+        width: 413
+        height: 152
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04422fad120e5484588423479550fb98
+      internalID: 1538169233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI 8_4
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 778
+        width: 412
+        height: 160
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1f975f8dea0f47499a6670a66598fa5
+      internalID: -1496080623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ccbb347526e5572459dc64d538f1d6f9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      UI 8_0: -1240774822
+      UI 8_1: -139543232
+      UI 8_10: -918768646
+      UI 8_100: 898765041
+      UI 8_101: -182402611
+      UI 8_102: 1337753670
+      UI 8_103: 680116255
+      UI 8_104: -458397304
+      UI 8_105: 1407010008
+      UI 8_106: -1460061769
+      UI 8_107: 309001541
+      UI 8_108: -1264036858
+      UI 8_109: 1549560690
+      UI 8_11: -772371211
+      UI 8_110: 471821947
+      UI 8_111: -610691029
+      UI 8_112: 1444469797
+      UI 8_113: 812483247
+      UI 8_114: 1259084695
+      UI 8_115: -1020887723
+      UI 8_12: -958503510
+      UI 8_13: -1859396913
+      UI 8_14: 1166306210
+      UI 8_15: 1270020791
+      UI 8_16: -2013723624
+      UI 8_17: -356117042
+      UI 8_18: -504480349
+      UI 8_19: 1345159244
+      UI 8_2: 1538169233
+      UI 8_20: 1720670601
+      UI 8_21: 83003124
+      UI 8_22: 1347427615
+      UI 8_23: -636620417
+      UI 8_24: 1228035528
+      UI 8_25: -2091230324
+      UI 8_26: -2102650678
+      UI 8_27: -1447892785
+      UI 8_28: 763189820
+      UI 8_29: -1930672400
+      UI 8_3: 1895693953
+      UI 8_30: 1938925939
+      UI 8_31: -443676910
+      UI 8_32: 1405820492
+      UI 8_33: -1250597007
+      UI 8_34: -1349066144
+      UI 8_35: 918739569
+      UI 8_36: -2075042234
+      UI 8_37: -1552335217
+      UI 8_38: -811892694
+      UI 8_39: -186268954
+      UI 8_4: -1496080623
+      UI 8_40: -228358892
+      UI 8_41: -1242729561
+      UI 8_42: -909908511
+      UI 8_43: -47242066
+      UI 8_44: 504100823
+      UI 8_45: -988382744
+      UI 8_46: 108509510
+      UI 8_47: 445821712
+      UI 8_48: -319613141
+      UI 8_49: -401530167
+      UI 8_5: 243645787
+      UI 8_50: -283787259
+      UI 8_51: -1502063623
+      UI 8_52: 597270957
+      UI 8_53: -1356772815
+      UI 8_54: 496476172
+      UI 8_55: 124230964
+      UI 8_56: -1395079606
+      UI 8_57: -974206434
+      UI 8_58: 1178487841
+      UI 8_59: -50542193
+      UI 8_6: 1329816013
+      UI 8_60: -1883718314
+      UI 8_61: -891576601
+      UI 8_62: -1848446438
+      UI 8_63: 1738885437
+      UI 8_64: -1299617068
+      UI 8_65: 237565314
+      UI 8_66: 1554978568
+      UI 8_67: 600430055
+      UI 8_68: -281592546
+      UI 8_69: -1988547487
+      UI 8_7: -1930191117
+      UI 8_70: 849182349
+      UI 8_71: 764565617
+      UI 8_72: -1338774502
+      UI 8_73: -1597148272
+      UI 8_74: 1831446584
+      UI 8_75: 782288941
+      UI 8_76: 315231153
+      UI 8_77: -495645356
+      UI 8_78: 166391920
+      UI 8_79: 1252533792
+      UI 8_8: -1636793282
+      UI 8_80: -225868084
+      UI 8_81: -756211394
+      UI 8_82: -944573235
+      UI 8_83: 1953387081
+      UI 8_84: -2095712433
+      UI 8_85: 1344155451
+      UI 8_86: 84742434
+      UI 8_87: -1024046420
+      UI 8_88: 1640123532
+      UI 8_89: -1138952830
+      UI 8_9: -1258788839
+      UI 8_90: 286301664
+      UI 8_91: 866748109
+      UI 8_92: 1638461716
+      UI 8_93: -141142906
+      UI 8_94: -1791705070
+      UI 8_95: -1288752825
+      UI 8_96: 1270029627
+      UI 8_97: 285805487
+      UI 8_98: -899048640
+      UI 8_99: -1819048276
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
