@@ -43,6 +43,9 @@ public class PlayerLobbyUI : MonoBehaviour
     public Sprite entryImage2SelectSprite;
     public Sprite entryImage2ReadySprite;
 
+    [Header("全員READY時に表示する画像")]
+    public Image allReadyImage;
+
 
     //==================================================
     // 起動時
@@ -55,6 +58,9 @@ public class PlayerLobbyUI : MonoBehaviour
 
         // 起動したら必ず「未参加」に戻す
         SetState(UIState.Waiting);
+
+        if (allReadyImage != null)
+            allReadyImage.gameObject.SetActive(false);
     }
 
 
@@ -249,5 +255,11 @@ public class PlayerLobbyUI : MonoBehaviour
             statusImage.sprite = null;
             statusImage.enabled = false;
         }
+    }
+
+    public void SetAllReadyImage(bool show)
+    {
+        if (allReadyImage != null)
+            allReadyImage.gameObject.SetActive(show);
     }
 }

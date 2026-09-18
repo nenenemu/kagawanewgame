@@ -432,31 +432,25 @@ public class ExhibitionLobbyManager : MonoBehaviour
         if (!IsValidPlayerIndex(index))
             return;
 
-
         LobbyPlayer player =
             players[index];
-
 
         player.state =
             LobbyPlayerState.Selecting;
 
+        // 全員READY用画像を消す
+        if (player.ui != null)
+        {
+            player.ui.SetAllReadyImage(false);
+        }
 
         UpdateUI(index);
 
-
-        // READYを解除した時も
-        // 現在のキャラをプレビュー
         UpdateCharacterPreview(index);
-
 
         Debug.Log(
             $"P{index + 1} : READY CANCEL"
         );
-
-
-        //==================================================
-        // 万が一カウントダウン中なら止める
-        //==================================================
 
         if (gameManager != null &&
             gameManager.currentState ==
@@ -509,22 +503,29 @@ public class ExhibitionLobbyManager : MonoBehaviour
         //==================================================
 
         if (joinedCount >= 2 &&
-            readyCount == joinedCount)
+    readyCount == joinedCount)
         {
             Debug.Log(
                 "全参加者READY → 10秒カウントダウン開始"
             );
 
+            // 全員READY用画像を表示
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i] == null)
+                    continue;
+
+                if (!players[i].joined)
+                    continue;
+
+                if (players[i].ui != null)
+                {
+                    players[i].ui.SetAllReadyImage(true);
+                }
+            }
 
             // 全員の卵を同期
             SyncAllPlayers();
-
-
-            //==================================================
-            // ★ gameStarted = true にしない
-            //
-            // Countdown中も左クリックを受け付けるため
-            //==================================================
 
             StartGame();
         }
@@ -791,6 +792,11 @@ public class ExhibitionLobbyManager : MonoBehaviour
             // 3Dプレビューを消す
             ClearCharacterPreview(i);
 
+
+            if (players[i].ui != null)
+            {
+                players[i].ui.SetAllReadyImage(false);
+            }
 
             UpdateUI(i);
         }
