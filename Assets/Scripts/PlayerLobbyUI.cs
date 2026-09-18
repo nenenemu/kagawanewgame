@@ -36,7 +36,12 @@ public class PlayerLobbyUI : MonoBehaviour
 
     [Header("エントリー時に表示する固定画像")]
     public Image entryImage;
+
+
+    [Header("SELECT / READYで切り替える画像")]
     public Image entryImage2;
+    public Sprite entryImage2SelectSprite;
+    public Sprite entryImage2ReadySprite;
 
 
     //==================================================
@@ -127,17 +132,14 @@ public class PlayerLobbyUI : MonoBehaviour
                     entryImage.gameObject.SetActive(true);
 
                 if (entryImage2 != null)
+                {
                     entryImage2.gameObject.SetActive(true);
-
-                if (entryImage2 != null)
-                    entryImage2.gameObject.SetActive(true);
+                    entryImage2.sprite = entryImage2SelectSprite;
+                }
 
                 if (stateText != null)
                     stateText.text = "SELECT";
 
-
-                // ★ キャラ選択画面に入った瞬間
-                // ★ アルファを255（100%）にする
                 SetImageOpacity(1.0f);
 
                 break;
@@ -152,7 +154,6 @@ public class PlayerLobbyUI : MonoBehaviour
                 if (pressR != null)
                     pressR.SetActive(false);
 
-                // キャラ選択UIは消す
                 if (characterSelect != null)
                     characterSelect.SetActive(false);
 
@@ -161,6 +162,12 @@ public class PlayerLobbyUI : MonoBehaviour
 
                 if (entryImage != null)
                     entryImage.gameObject.SetActive(true);
+
+                if (entryImage2 != null)
+                {
+                    entryImage2.gameObject.SetActive(true);
+                    entryImage2.sprite = entryImage2ReadySprite;
+                }
 
                 if (stateText != null)
                     stateText.text = "READY";

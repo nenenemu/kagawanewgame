@@ -1083,13 +1083,15 @@ MonoBehaviour:
   - {fileID: -1643013520, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
   statusImage: {fileID: 1662878399}
   statusImages:
-  - {fileID: 1137588371, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 1959803097, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 481613965, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
+  - {fileID: -1496080623, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: 1538169233, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: -139543232, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
   stateText: {fileID: 0}
   selectedImage: {fileID: 437316811}
   entryImage: {fileID: 1158770911}
   entryImage2: {fileID: 939459187}
+  entryImage2SelectSprite: {fileID: -1020887723, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  entryImage2ReadySprite: {fileID: 1259084695, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
 --- !u!114 &151190259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5345,13 +5347,15 @@ MonoBehaviour:
   - {fileID: -1643013520, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
   statusImage: {fileID: 1695458096}
   statusImages:
-  - {fileID: 1137588371, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 1959803097, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 481613965, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
+  - {fileID: -1496080623, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: 1538169233, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: -139543232, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
   stateText: {fileID: 0}
   selectedImage: {fileID: 246766596}
   entryImage: {fileID: 143810193}
   entryImage2: {fileID: 372471482}
+  entryImage2SelectSprite: {fileID: -1020887723, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  entryImage2ReadySprite: {fileID: 1259084695, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
 --- !u!114 &1325506676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6337,13 +6341,15 @@ MonoBehaviour:
   - {fileID: -1643013520, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
   statusImage: {fileID: 1919967315}
   statusImages:
-  - {fileID: 1137588371, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 1959803097, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 481613965, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
+  - {fileID: -1496080623, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: 1538169233, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: -139543232, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
   stateText: {fileID: 0}
   selectedImage: {fileID: 1969442791}
   entryImage: {fileID: 843374379}
   entryImage2: {fileID: 1402883372}
+  entryImage2SelectSprite: {fileID: -1020887723, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  entryImage2ReadySprite: {fileID: 1259084695, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
 --- !u!114 &1707912945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6763,13 +6769,15 @@ MonoBehaviour:
   - {fileID: -1643013520, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
   statusImage: {fileID: 199001017}
   statusImages:
-  - {fileID: 1137588371, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 1959803097, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
-  - {fileID: 481613965, guid: bd92bda2ab41b3f4e90b31bd4cbb2e9d, type: 3}
+  - {fileID: -1496080623, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: 1538169233, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  - {fileID: -139543232, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
   stateText: {fileID: 0}
   selectedImage: {fileID: 792391882}
   entryImage: {fileID: 667323435}
   entryImage2: {fileID: 384132946}
+  entryImage2SelectSprite: {fileID: -1020887723, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
+  entryImage2ReadySprite: {fileID: 1259084695, guid: 70decc5a68fc0ad4ca57d9b2e89262a0, type: 3}
 --- !u!114 &1832024054
 MonoBehaviour:
   m_ObjectHideFlags: 0
