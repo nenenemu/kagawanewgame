@@ -360,6 +360,26 @@ public class MultiMouseTransform : MonoBehaviour
 
 
     // =========================================================
+    // ★今回追加
+    // 登録済み物理マウス数
+    //
+    // Windowsが持っている全マウス数ではない。
+    //
+    // 実際に左クリックしてPとして登録された
+    // 物理マウスの数だけを返す。
+    // =========================================================
+
+    public int GetRegisteredMouseCount()
+    {
+        return Mathf.Clamp(
+            deviceToPlayer.Count,
+            0,
+            4
+        );
+    }
+
+
+    // =========================================================
     // WndProc
     // =========================================================
 
@@ -470,13 +490,16 @@ public class MultiMouseTransform : MonoBehaviour
                 (buttons &
                  RI_MOUSE_LEFT_BUTTON_DOWN) != 0;
 
+
             bool leftUp =
                 (buttons &
                  RI_MOUSE_LEFT_BUTTON_UP) != 0;
 
+
             bool rightDown =
                 (buttons &
                  RI_MOUSE_RIGHT_BUTTON_DOWN) != 0;
+
 
             bool rightUp =
                 (buttons &
@@ -486,8 +509,7 @@ public class MultiMouseTransform : MonoBehaviour
             // =================================================
             // P番号取得
             //
-            // ★重要
-            // 未登録マウスは「左クリックした時」だけ登録
+            // ★未登録マウスは左クリックした時だけ登録
             // =================================================
 
             int playerIndex;
@@ -504,7 +526,7 @@ public class MultiMouseTransform : MonoBehaviour
                 // ---------------------------------------------
                 // 未登録マウス
                 //
-                // 左クリックで参加するまで登録しない
+                // 左クリック以外では登録しない
                 // ---------------------------------------------
 
                 if (!leftDown)
@@ -538,6 +560,12 @@ public class MultiMouseTransform : MonoBehaviour
                     (playerIndex + 1) +
                     "P"
                 );
+
+
+                Debug.Log(
+                    "現在の登録マウス数 : " +
+                    deviceToPlayer.Count
+                );
             }
 
 
@@ -554,6 +582,7 @@ public class MultiMouseTransform : MonoBehaviour
 
             int x =
                 raw.mouse.lLastX;
+
 
             int y =
                 raw.mouse.lLastY;
@@ -703,11 +732,6 @@ public class MultiMouseTransform : MonoBehaviour
 
                     lobbyManager.OnPlayerMouseRightClick(i);
                 }
-
-
-                // ---------------------------------------------
-                // ロビー中は移動しない
-                // ---------------------------------------------
             }
 
 
@@ -811,6 +835,7 @@ public class MultiMouseTransform : MonoBehaviour
         Vector3 forward =
             cam.transform.forward;
 
+
         Vector3 right =
             cam.transform.right;
 
@@ -825,6 +850,7 @@ public class MultiMouseTransform : MonoBehaviour
 
         float horizontal =
             -delta.x * xSensitivity;
+
 
         float vertical =
             -delta.y * zSensitivity;

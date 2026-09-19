@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -36,12 +37,39 @@ public class PlayerManager : MonoBehaviour
 
 
     // =========================================================
+    // 戦闘中背景画像
+    // =========================================================
+
+    [Header("戦闘中背景画像")]
+    [Tooltip("P1～P4の背景Imageを設定")]
+    public RectTransform[] backgroundImages = new RectTransform[4];
+
+
+    // =========================================================
+    // 背景用Canvas
+    // =========================================================
+
+    [Header("背景用Canvas")]
+    [Tooltip("B1～B4が入っているCanvasを設定")]
+    public Canvas backgroundCanvas;
+
+
+    // =========================================================
+    // カメラサイズ調整
+    // =========================================================
+
+    [Header("カメラサイズ調整")]
+    [Tooltip("背景の分割領域に対してカメラを内側へ縮める割合")]
+    [Range(0f, 0.2f)]
+    public float cameraMargin = 0.04f;
+
+
+    // =========================================================
     // 初期化
     // =========================================================
 
     void Awake()
     {
-        // 配列が4人分でなければ作り直す
         if (players == null || players.Length != 4)
         {
             players = new PlayerData[4];
@@ -52,14 +80,13 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        // 最初は全カメラOFF
         DisableAllCameras();
+        DisableAllBackgrounds();
     }
 
 
     // =========================================================
     // ゲーム開始
-    // GameManagerから呼ぶ
     // =========================================================
 
     public void StartGame()
@@ -68,16 +95,11 @@ public class PlayerManager : MonoBehaviour
             "===== PLAYER MANAGER : GAME START ====="
         );
 
-
-        // -----------------------------------------------------
-        // 念のため古い卵を削除
-        // -----------------------------------------------------
-
         DeleteAllSpawnedEggs();
 
 
         // -----------------------------------------------------
-        // 4人分の卵を生成
+        // 参加プレイヤーの卵を生成
         // -----------------------------------------------------
 
         for (int i = 0; i < players.Length; i++)
@@ -87,7 +109,7 @@ public class PlayerManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // カメラ設定
+        // カメラ・背景設定
         // -----------------------------------------------------
 
         UpdateCameras();
@@ -110,9 +132,9 @@ public class PlayerManager : MonoBehaviour
             players[playerIndex];
 
 
-        // =====================================================
-        // 参加していない
-        // =====================================================
+        // -----------------------------------------------------
+        // 不参加
+        // -----------------------------------------------------
 
         if (!player.joined)
         {
@@ -131,9 +153,9 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
+        // -----------------------------------------------------
         // EggDataチェック
-        // =====================================================
+        // -----------------------------------------------------
 
         if (player.selectedEgg == null)
         {
@@ -147,9 +169,9 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
+        // -----------------------------------------------------
         // Prefabチェック
-        // =====================================================
+        // -----------------------------------------------------
 
         if (player.selectedEgg.eggPrefab == null)
         {
@@ -163,9 +185,9 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
+        // -----------------------------------------------------
         // SpawnPointチェック
-        // =====================================================
+        // -----------------------------------------------------
 
         if (player.spawnPoint == null)
         {
@@ -179,9 +201,9 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
+        // -----------------------------------------------------
         // 卵生成
-        // =====================================================
+        // -----------------------------------------------------
 
         GameObject egg =
             Instantiate(
@@ -194,8 +216,12 @@ public class PlayerManager : MonoBehaviour
         player.spawnedEgg = egg;
 
 
-        EggRespawn respawn =//追加分
-        egg.GetComponent<EggRespawn>();
+        // -----------------------------------------------------
+        // EggRespawn
+        // -----------------------------------------------------
+
+        EggRespawn respawn =
+            egg.GetComponent<EggRespawn>();
 
         if (respawn != null)
         {
@@ -206,13 +232,12 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
-        // EggPrefab初期化
-        // =====================================================
+        // -----------------------------------------------------
+        // EggPrefab
+        // -----------------------------------------------------
 
         EggPrefab eggScript =
             egg.GetComponent<EggPrefab>();
-
 
         if (eggScript != null)
         {
@@ -229,10 +254,6 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        // =====================================================
-        // ログ
-        // =====================================================
-
         Debug.Log(
             "P" +
             (playerIndex + 1) +
@@ -244,16 +265,13 @@ public class PlayerManager : MonoBehaviour
 
 
     // =========================================================
-    // カメラ設定
+    // カメラ・背景設定
     // =========================================================
 
     void UpdateCameras()
     {
-        // -----------------------------------------------------
-        // まず参加人数を取得
-        // -----------------------------------------------------
-
-        int playerCount = GetPlayerCount();
+        int playerCount =
+            GetPlayerCount();
 
 
         Debug.Log(
@@ -267,322 +285,540 @@ public class PlayerManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // 各カメラ設定
+        // 全部OFF
         // -----------------------------------------------------
 
-        for (int i = 0; i < players.Length; i++)
+        DisableAllCameras();
+        DisableAllBackgrounds();
+
+
+        // -----------------------------------------------------
+        // 参加順に配置
+        // -----------------------------------------------------
+
+        int slot = 0;
+
+        for (int playerIndex = 0;
+             playerIndex < players.Length;
+             playerIndex++)
         {
             PlayerData player =
-                players[i];
+                players[playerIndex];
 
 
-            // =================================================
-            // カメラなし
-            // =================================================
+            if (player == null)
+                continue;
+
+            if (!player.joined)
+                continue;
+
+            if (player.spawnedEgg == null)
+                continue;
+
+
+            // -------------------------------------------------
+            // Camera
+            // -------------------------------------------------
 
             if (player.playerCamera == null)
             {
                 Debug.LogWarning(
                     "P" +
-                    (i + 1) +
+                    (playerIndex + 1) +
                     " : Cameraが設定されていません。"
                 );
 
+                slot++;
                 continue;
             }
 
-
-            // =================================================
-            // 不参加 / 卵なし
-            // =================================================
-
-            if (!player.joined ||
-                player.spawnedEgg == null)
-            {
-                player.playerCamera.gameObject.SetActive(false);
-
-                continue;
-            }
-
-
-            // =================================================
-            // カメラON
-            // =================================================
 
             player.playerCamera.gameObject.SetActive(true);
 
 
-            // =================================================
-            // Viewport設定
-            // =================================================
+            // -------------------------------------------------
+            // カメラ
+            // -------------------------------------------------
 
             SetCameraViewport(
                 player.playerCamera,
-                i,
+                slot,
                 playerCount
             );
 
 
-            // =================================================
-            // TargetCamera取得
-            // =================================================
+            // -------------------------------------------------
+            // 背景
+            // -------------------------------------------------
+
+            SetBackgroundViewport(
+                playerIndex,
+                slot,
+                playerCount
+            );
+
+
+            // -------------------------------------------------
+            // TargetCamera
+            // -------------------------------------------------
 
             TargetCamera cameraController =
                 player.playerCamera
                     .GetComponent<TargetCamera>();
 
-
             if (cameraController == null)
             {
                 Debug.LogError(
                     "P" +
-                    (i + 1) +
+                    (playerIndex + 1) +
                     " : CameraにTargetCameraがありません！"
                 );
 
+                slot++;
                 continue;
             }
 
-
-            // =================================================
-            // 自分
-            // =================================================
 
             cameraController.player =
                 player.spawnedEgg.transform;
 
 
-            // =================================================
-            // ターゲット
-            // =================================================
-
             cameraController.target =
-                FindTargetForPlayer(i);
+                FindTargetForPlayer(playerIndex);
 
 
             Debug.Log(
                 "P" +
-                (i + 1) +
+                (playerIndex + 1) +
+                " → 画面slot " +
+                slot +
                 " Camera設定完了"
             );
+
+
+            slot++;
         }
     }
 
 
     // =========================================================
-    // カメラ分割設定
+    // カメラ設定
     // =========================================================
 
     void SetCameraViewport(
         Camera camera,
-        int playerIndex,
+        int slot,
         int playerCount
     )
     {
-        // =====================================================
-        // 1人
-        // 全画面
-        // =====================================================
+        Rect baseRect =
+            GetViewportRect(
+                slot,
+                playerCount
+            );
 
-        if (playerCount == 1)
+
+        float xMargin =
+            baseRect.width * cameraMargin;
+
+        float yMargin =
+            baseRect.height * cameraMargin;
+
+
+        camera.rect =
+            new Rect(
+                baseRect.x + xMargin,
+                baseRect.y + yMargin,
+                baseRect.width - (xMargin * 2f),
+                baseRect.height - (yMargin * 2f)
+            );
+    }
+
+
+    // =========================================================
+    // 背景設定
+    //
+    // Canvasの実サイズを基準に
+    // Width / Heightを直接設定する
+    // =========================================================
+
+    void SetBackgroundViewport(
+    int playerIndex,
+    int slot,
+    int playerCount
+)
+    {
+        if (backgroundImages == null)
+            return;
+
+        if (playerIndex < 0 ||
+            playerIndex >= backgroundImages.Length)
+            return;
+
+        RectTransform bg =
+            backgroundImages[playerIndex];
+
+        if (bg == null)
+            return;
+
+        if (backgroundCanvas == null)
         {
-            camera.rect =
-                new Rect(
-                    0f,
-                    0f,
-                    1f,
-                    1f
-                );
+            Debug.LogError(
+                "PlayerManagerの「Background Canvas」にCanvasを設定してください。"
+            );
+            return;
+        }
+
+        bg.gameObject.SetActive(true);
+
+        // ---------------------------------------------------------
+        // Canvasの最大サイズを取得
+        // ---------------------------------------------------------
+
+        Canvas.ForceUpdateCanvases();
+
+        RectTransform canvasRect =
+            backgroundCanvas.GetComponent<RectTransform>();
+
+        if (canvasRect == null)
+            return;
+
+        float canvasWidth =
+            canvasRect.rect.width;
+
+        float canvasHeight =
+            canvasRect.rect.height;
+
+        if (canvasWidth <= 0f)
+            canvasWidth = Screen.width;
+
+        if (canvasHeight <= 0f)
+            canvasHeight = Screen.height;
+
+
+        // ---------------------------------------------------------
+        // 今の背景Imageそのものの元サイズ
+        // ---------------------------------------------------------
+
+        float originalWidth =
+            bg.rect.width;
+
+        float originalHeight =
+            bg.rect.height;
+
+
+        if (originalWidth <= 0f ||
+            originalHeight <= 0f)
+        {
+            Debug.LogWarning(
+                "P" +
+                (playerIndex + 1) +
+                " 背景Imageの元サイズが0です。"
+            );
 
             return;
         }
 
 
+        // ---------------------------------------------------------
+        // 分割領域
+        // ---------------------------------------------------------
+
+        Rect rect =
+            GetViewportRect(
+                slot,
+                playerCount
+            );
+
+
+        // ---------------------------------------------------------
+        // この背景が必要なサイズ
+        // ---------------------------------------------------------
+
+        float targetWidth =
+            canvasWidth * rect.width;
+
+        float targetHeight =
+            canvasHeight * rect.height;
+
+
+        // ---------------------------------------------------------
+        // 横・縦それぞれの拡大率を計算
+        // ---------------------------------------------------------
+
+        float scaleX =
+            targetWidth / originalWidth;
+
+        float scaleY =
+            targetHeight / originalHeight;
+
+
+        // ---------------------------------------------------------
+        // Imageを分割領域いっぱいまで拡大
+        //
+        // 縦横比を無視して、それぞれ合わせる
+        // ---------------------------------------------------------
+
+        bg.localScale =
+            new Vector3(
+                scaleX,
+                scaleY,
+                1f
+            );
+
+
+        // ---------------------------------------------------------
+        // 中央基準
+        // ---------------------------------------------------------
+
+        bg.anchorMin =
+            new Vector2(
+                0.5f,
+                0.5f
+            );
+
+        bg.anchorMax =
+            new Vector2(
+                0.5f,
+                0.5f
+            );
+
+        bg.pivot =
+            new Vector2(
+                0.5f,
+                0.5f
+            );
+
+
+        // ---------------------------------------------------------
+        // 分割領域の中心
+        // ---------------------------------------------------------
+
+        float centerX =
+            rect.x +
+            rect.width * 0.5f;
+
+        float centerY =
+            rect.y +
+            rect.height * 0.5f;
+
+
+        // ---------------------------------------------------------
+        // Canvas中央からの位置
+        // ---------------------------------------------------------
+
+        bg.anchoredPosition =
+            new Vector2(
+                (centerX - 0.5f) * canvasWidth,
+                (centerY - 0.5f) * canvasHeight
+            );
+
+
+        Debug.Log(
+            "P" +
+            (playerIndex + 1) +
+            " 背景Scale : " +
+            bg.localScale +
+            " / 元サイズ : " +
+            originalWidth +
+            " x " +
+            originalHeight +
+            " / 目標 : " +
+            targetWidth +
+            " x " +
+            targetHeight
+        );
+    }
+
+
+    // =========================================================
+    // 分割位置
+    // =========================================================
+
+    Rect GetViewportRect(
+        int slot,
+        int playerCount
+    )
+    {
+        // =====================================================
+        // 1人
+        // =====================================================
+
+        if (playerCount == 1)
+        {
+            return new Rect(
+                0f,
+                0f,
+                1f,
+                1f
+            );
+        }
+
+
         // =====================================================
         // 2人
-        // 左右2分割
         // =====================================================
 
         if (playerCount == 2)
         {
-            // P1
-            if (playerIndex == 0)
+            if (slot == 0)
             {
-                camera.rect =
-                    new Rect(
-                        0f,
-                        0f,
-                        0.5f,
-                        1f
-                    );
+                return new Rect(
+                    0f,
+                    0f,
+                    0.5f,
+                    1f
+                );
             }
 
-            // P2
-            else if (playerIndex == 1)
-            {
-                camera.rect =
-                    new Rect(
-                        0.5f,
-                        0f,
-                        0.5f,
-                        1f
-                    );
-            }
-
-            return;
+            return new Rect(
+                0.5f,
+                0f,
+                0.5f,
+                1f
+            );
         }
 
 
         // =====================================================
         // 3人
         //
-        // ┌──────┬──────┐
-        // │  P1  │  P2  │
-        // ├──────┴──────┤
-        // │     P3      │
-        // └─────────────┘
+        // ┌────────┬────────┐
+        // │   P1   │   P2   │
+        // ├────────┴────────┤
+        // │       P3        │
+        // └─────────────────┘
         // =====================================================
 
         if (playerCount == 3)
         {
-            // P1
-            if (playerIndex == 0)
+            if (slot == 0)
             {
-                camera.rect =
-                    new Rect(
-                        0f,
-                        0.5f,
-                        0.5f,
-                        0.5f
-                    );
+                return new Rect(
+                    0f,
+                    0.5f,
+                    0.5f,
+                    0.5f
+                );
             }
 
-            // P2
-            else if (playerIndex == 1)
+            if (slot == 1)
             {
-                camera.rect =
-                    new Rect(
-                        0.5f,
-                        0.5f,
-                        0.5f,
-                        0.5f
-                    );
+                return new Rect(
+                    0.5f,
+                    0.5f,
+                    0.5f,
+                    0.5f
+                );
             }
 
-            // P3
-            else if (playerIndex == 2)
-            {
-                camera.rect =
-                    new Rect(
-                        0f,
-                        0f,
-                        1f,
-                        0.5f
-                    );
-            }
-
-            return;
+            return new Rect(
+                0f,
+                0f,
+                1f,
+                0.5f
+            );
         }
 
 
         // =====================================================
         // 4人
         //
-        // ┌──────┬──────┐
-        // │  P1  │  P2  │
-        // ├──────┼──────┤
-        // │  P3  │  P4  │
-        // └──────┴──────┘
+        // ┌────────┬────────┐
+        // │   P1   │   P2   │
+        // ├────────┼────────┤
+        // │   P3   │   P4   │
+        // └────────┴────────┘
         // =====================================================
 
-        if (playerCount >= 4)
+        if (slot == 0)
         {
-            // P1
-            if (playerIndex == 0)
-            {
-                camera.rect =
-                    new Rect(
-                        0f,
-                        0.5f,
-                        0.5f,
-                        0.5f
-                    );
-            }
+            return new Rect(
+                0f,
+                0.5f,
+                0.5f,
+                0.5f
+            );
+        }
 
-            // P2
-            else if (playerIndex == 1)
-            {
-                camera.rect =
-                    new Rect(
-                        0.5f,
-                        0.5f,
-                        0.5f,
-                        0.5f
-                    );
-            }
+        if (slot == 1)
+        {
+            return new Rect(
+                0.5f,
+                0.5f,
+                0.5f,
+                0.5f
+            );
+        }
 
-            // P3
-            else if (playerIndex == 2)
-            {
-                camera.rect =
-                    new Rect(
-                        0f,
-                        0f,
-                        0.5f,
-                        0.5f
-                    );
-            }
+        if (slot == 2)
+        {
+            return new Rect(
+                0f,
+                0f,
+                0.5f,
+                0.5f
+            );
+        }
 
-            // P4
-            else if (playerIndex == 3)
+        return new Rect(
+            0.5f,
+            0f,
+            0.5f,
+            0.5f
+        );
+    }
+
+
+    // =========================================================
+    // 背景全部OFF
+    // =========================================================
+
+    void DisableAllBackgrounds()
+    {
+        if (backgroundImages == null)
+            return;
+
+        for (int i = 0;
+             i < backgroundImages.Length;
+             i++)
+        {
+            if (backgroundImages[i] != null)
             {
-                camera.rect =
-                    new Rect(
-                        0.5f,
-                        0f,
-                        0.5f,
-                        0.5f
-                    );
+                backgroundImages[i]
+                    .gameObject
+                    .SetActive(false);
             }
         }
     }
 
 
     // =========================================================
-    // カメラの相手を探す
+    // カメラのターゲットを探す
     // =========================================================
 
     Transform FindTargetForPlayer(
         int playerIndex
     )
     {
-        // 自分以外の参加プレイヤーを探す
-
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0;
+             i < players.Length;
+             i++)
         {
-            // 自分は除外
             if (i == playerIndex)
                 continue;
 
-
-            // 不参加は除外
             if (!players[i].joined)
                 continue;
 
-
-            // 卵がない場合は除外
             if (players[i].spawnedEgg == null)
                 continue;
 
-
-            // 最初に見つかった相手を返す
             return players[i]
                 .spawnedEgg
                 .transform;
         }
 
-
-        // 相手がいない
         return null;
     }
 
@@ -593,9 +829,13 @@ public class PlayerManager : MonoBehaviour
 
     void DisableAllCameras()
     {
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0;
+             i < players.Length;
+             i++)
         {
-            DisableCamera(players[i]);
+            DisableCamera(
+                players[i]
+            );
         }
     }
 
@@ -611,24 +851,26 @@ public class PlayerManager : MonoBehaviour
         if (player == null)
             return;
 
-
         if (player.playerCamera != null)
         {
-            player.playerCamera.gameObject.SetActive(false);
+            player.playerCamera
+                .gameObject
+                .SetActive(false);
         }
     }
 
 
     // =========================================================
-    // 参加人数取得
+    // 参加人数
     // =========================================================
 
     public int GetPlayerCount()
     {
         int count = 0;
 
-
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0;
+             i < players.Length;
+             i++)
         {
             if (players[i].joined &&
                 players[i].spawnedEgg != null)
@@ -637,13 +879,11 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-
         return count;
     }
 
 
     // =========================================================
-    // UIから呼ぶ
     // プレイヤー参加設定
     // =========================================================
 
@@ -658,10 +898,8 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-
         players[playerIndex].joined =
             joined;
-
 
         Debug.Log(
             "P" +
@@ -673,7 +911,6 @@ public class PlayerManager : MonoBehaviour
 
 
     // =========================================================
-    // UIから呼ぶ
     // 卵選択
     // =========================================================
 
@@ -688,10 +925,8 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-
         players[playerIndex].selectedEgg =
             egg;
-
 
         if (egg != null)
         {
@@ -711,7 +946,9 @@ public class PlayerManager : MonoBehaviour
 
     public void DeleteAllSpawnedEggs()
     {
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0;
+             i < players.Length;
+             i++)
         {
             if (players[i].spawnedEgg != null)
             {
@@ -726,7 +963,7 @@ public class PlayerManager : MonoBehaviour
 
 
     // =========================================================
-    // 選択画面に戻る
+    // 選択画面へ戻る
     // =========================================================
 
     public void ReturnToSelect()
@@ -735,26 +972,27 @@ public class PlayerManager : MonoBehaviour
             "===== RETURN TO SELECT ====="
         );
 
-
-        // 卵を全部削除
         DeleteAllSpawnedEggs();
 
-
-        // カメラを全部OFF
         DisableAllCameras();
+        DisableAllBackgrounds();
 
-
-        // 参加状態と選択をリセット
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0;
+             i < players.Length;
+             i++)
         {
             players[i].joined = false;
             players[i].selectedEgg = null;
         }
     }
+
+
+    // =========================================================
+    // カメラ再更新
+    // =========================================================
+
     public void RefreshCameras()
     {
         UpdateCameras();
     }
-
-
 }
